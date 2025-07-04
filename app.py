@@ -122,7 +122,7 @@ def server(input, output, session):
 
     @output
     @render.ui
-    def top10_bar():
+    async def top10_bar():
         data = happiness_data[happiness_data['Year'] == int(input.year())]
         data = data.sort_values(by='Ladder score', ascending=False).head(10)
         fig = px.bar(
@@ -134,11 +134,11 @@ def server(input, output, session):
             labels={'Ladder score': 'Happiness Score', 'Country name': 'Country'}
         )
         fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0}, template = current_theme())
-        return ui.HTML(fig.to_html(full_html=True))
+        return ui.HTML(fig.to_html(full_html=False))
 
     @output
     @render.ui
-    def happiness_map():
+    async def happiness_map():
         data = happiness_data[happiness_data['Year'] == int(input.mapyear())]
         fig = px.choropleth(
             data,
@@ -151,8 +151,7 @@ def server(input, output, session):
             title=f'World Happiness in {input.year()}'
         )
         fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0}, template = current_theme())
-        fig_html = fig.to_html(full_html=True)
-        return ui.HTML(fig_html)
+        return ui.HTML(fig.to_html(full_html=False))
 
     @output
     @render.ui
