@@ -1,4 +1,3 @@
-from htmltools.tags import style
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -155,7 +154,7 @@ def server(input, output, session):
 
     @output
     @render.ui
-    def scatterplot():
+    async def scatterplot():
         fig = px.scatter(
                 happiness_data,
                 x="Ladder score",
@@ -167,18 +166,11 @@ def server(input, output, session):
 
     @output
     @render.ui
-    def linecountry():
+    async def linecountry():
         data = happiness_data[happiness_data["Country name"] == input.ddCountry()]
         data = data.sort_values(by='Year', ascending=True)
-        # Create an area chart
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=data['Year'],
-            y=data['Ladder score'],
-            mode='lines'
-        ))
         
-        # Update layout
+        fig = px.area(data, x = 'Year',y = 'Ladder score', color = "Country name")
         fig.update_layout(
             margin={"r":0,"t":40,"l":0,"b":0},
             title= f"Area Graph Example {input.ddCountry()}",
