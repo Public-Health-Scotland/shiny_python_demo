@@ -1,4 +1,5 @@
 shiny==1.4.0
-plotly==6.1.2
+plotly==6.2.0
 pandas==2.3.0
 statsmodels==0.14.4
+faicons==0.2.2
