@@ -3,6 +3,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 from shiny import App, render, reactive, ui
 import faicons as fa
+from pathlib import Path
+
+assets_folder = Path(__file__).parent / 'static'
 
 file_path = 'data/WHR2024.csv'  # Ensure this is the correct path to your CSV file
 happiness_data = pd.read_csv(file_path, delimiter=',')
@@ -87,9 +90,10 @@ app_ui = ui.page_navbar(
     ui.nav_spacer(), 
     ui.nav_control(ui.input_dark_mode(id="dark_mode_switch")),
     title=ui.tags.a(
-        ui.tags.img(src="logo.png", height="30px"), "",
-        href="#",
-        # class_="navbar-brand d-flex align-items-center"
+        ui.tags.img(src="static/logo.png", height="45px"), "",
+        href="https://www.publichealthscotland.scot/",
+        target="_blank",
+        class_="navbar-brand d-flex align-items-center"
     ),
     navbar_options=ui.navbar_options(position="fixed-top")
 )
@@ -180,4 +184,4 @@ def server(input, output, session):
         )
         return ui.HTML(fig.to_html(full_html=True))
 
-app = App(app_ui, server)
+app = App(app_ui, server, static_assets={"/static": assets_folder})
