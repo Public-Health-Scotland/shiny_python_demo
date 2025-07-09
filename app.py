@@ -1,16 +1,17 @@
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 from shiny import App, render, reactive, ui
 import faicons as fa
 from pathlib import Path
 
 assets_folder = Path(__file__).parent / 'static'
 
-file_path = 'data/WHR2024.csv'  # Ensure this is the correct path to your CSV file
-happiness_data = pd.read_csv(file_path, delimiter=',')
+happiness_data = pd.read_csv('data/WHR2024.csv', usecols = ['Year', 'Country name', 'Ladder score', 'Explained by: Log GDP per capita'])
 dict_years = {str(year): str(year) for year in sorted(happiness_data['Year'].unique())}
 country_list = happiness_data["Country name"].unique()
+
+def my_dropdown_year(id):
+    return ui.input_select(id, "Select a Year:", dict_years)
 
 app_ui = ui.page_navbar(
     ui.nav_panel("Home", 
@@ -67,7 +68,7 @@ app_ui = ui.page_navbar(
         ui.layout_sidebar(
             ui.sidebar(
                 ui.h3("World Happiness top 10"),
-                ui.input_select("year", "Select a Year:", dict_years)
+                my_dropdown_year("year")
             ),
             ui.output_ui("top10_bar")
         )
@@ -77,7 +78,7 @@ app_ui = ui.page_navbar(
         ui.layout_sidebar(
             ui.sidebar(
                 ui.h3("Map plot"),
-                ui.input_select("mapyear", "Select a Year:", dict_years)
+                my_dropdown_year("mapyear")
             ),
             ui.output_ui("happiness_map")
         )
@@ -95,6 +96,7 @@ app_ui = ui.page_navbar(
         target="_blank",
         class_="navbar-brand d-flex align-items-center"
     ),
+    lang="en",
     navbar_options=ui.navbar_options(position="fixed-top")
 )
 
@@ -163,7 +165,6 @@ def server(input, output, session):
                 happiness_data,
                 x="Ladder score",
                 y="Explained by: Log GDP per capita",
-                # color=None if color == "none" else color,
                 trendline="lowess")
         fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0}, template = current_theme())
         return ui.HTML(fig.to_html(full_html=True))
