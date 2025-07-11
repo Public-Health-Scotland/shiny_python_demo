@@ -9,6 +9,12 @@ This example uses the happiness data. Check WHR2024.csv in data folder
 
 There are some Plotly examples like bar, area and cloropleth
 
+Previous steps to prepare your VS Code for Python here: https://github.com/Public-Health-Scotland/vscode_prep
+
+Don't forget to activate your environment to run this example
+You only need to type on terminal shiny run app.py
+![alt text](img/image.png)
+
 ## Comments
 - Python shiny natively support async functions
 - Python shiny has a ui.input_dark_mode (not in R shiny)
