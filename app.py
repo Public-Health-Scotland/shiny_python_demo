@@ -106,7 +106,7 @@ def server(input, output, session):
         if input.dark_mode_switch() == "dark":
             template = "plotly_dark"
         else:
-            template = "plotly_white"
+            template = "ggplot2"
         return template
     
     @reactive.effect
