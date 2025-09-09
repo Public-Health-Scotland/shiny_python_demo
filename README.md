@@ -23,7 +23,7 @@ If you want to publish to shinyapps.io you need to install rsconnect-python in y
 You will need to run the following commands:
 - Register your credentials
 
-`rsconnect add --name <your-account-name> --token <your-token> --secret <your-secret>`
+`rsconnect add --account <your-account-name> --name <your-account-name> --token <your-token> --secret <your-secret>`
 
 - Deploy your app. If you are in the current app folder use ".", otherwise you should type the app_path
 
