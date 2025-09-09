@@ -12,8 +12,12 @@ There are some Plotly examples like bar, area and cloropleth
 Previous steps to prepare your VS Code for Python here: https://github.com/Public-Health-Scotland/vscode_prep
 
 Don't forget to activate your environment to run this example
-You only need to type on terminal shiny run app.py
+You only need to type on terminal: shiny run app.py
 ![alt text](img/image.png)
+
+Note: You can run your Shiny app and make it visible in your local network: shiny run --host 0.0.0.0 --port 8000 app.py
+
+You will beed to know your local IP address. You can find it typing ipconfig in a terminal. Then you can access your app from another device using this link: http://192.168.X.X:8000/
 
 If you want to publish to shinyapps.io you need to install rsconnect-python in your environment
 You will need to run the following commands:
