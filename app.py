@@ -94,7 +94,8 @@ app_ui = ui.page_navbar(
         )
     ),
     ui.nav_menu(
-        "More",
+        "More data",
+        ui.nav_panel("Database", ui.h2("Information from db")),
         ui.nav_panel("Contact", ui.h2("Contact us")),
         ui.nav_panel("Help", ui.h2("Help Page"))
     ),

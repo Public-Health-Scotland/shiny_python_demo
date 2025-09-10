@@ -27,7 +27,7 @@ You will need to run the following commands:
 
 - Deploy your app. If you are in the current app folder use ".", otherwise you should type the app_path
 
-`rsconnect deploy shiny --title "My Shiny App" .`
+`rsconnect deploy shiny -n <your-accout-name> --title "My Shiny Python" .`
 
 ## Comment
 - Python shiny natively support async functions
