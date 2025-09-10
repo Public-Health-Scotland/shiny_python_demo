@@ -63,7 +63,7 @@ app_ui = ui.page_navbar(
             col_widths=[12]
         )
     ),
-    ui.nav_panel("Bar", 
+    ui.nav_panel("Bar plot", 
         ui.h2("Bar plot happiness"),
         ui.layout_sidebar(
             ui.sidebar(
@@ -73,7 +73,7 @@ app_ui = ui.page_navbar(
             ui.output_ui("top10_bar")
         )
     ),
-    ui.nav_panel("Map", 
+    ui.nav_panel("Geodata", 
         ui.h2("Cloropleth happiness"),
         ui.layout_sidebar(
             ui.sidebar(
