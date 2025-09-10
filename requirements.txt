@@ -5,3 +5,5 @@ statsmodels==0.14.4
 faicons==0.2.2
 scipy==1.15.3
 rsconnect-python==1.27.0
+psycopg==3.2.10
+python-dotenv==1.1.1
