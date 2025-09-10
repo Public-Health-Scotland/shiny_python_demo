@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 import psycopg
+import re
 import pandas as pd
 
 # Load environment variables
@@ -9,20 +10,16 @@ load_dotenv()
 
 class MyDB:
     def __init__(self):
-        self.user = os.getenv("USER")
-        self.password = os.getenv("PASSWORD")
+        self.user = os.getenv("DBUSER")
+        self.password = os.getenv("DBPASSWORD")
         self.host = os.getenv("HOST")
         self.dbname = os.getenv("DATABASE")
         self.connection = None
     
     def connect(self):
         try:
-            self.connection = psycopg.connect(
-                host=self.host,
-                dbname=self.dbname,
-                user=self.user,
-                password=self.password
-            )
+            conn_string = f"postgresql://{self.user}:{self.password}@{self.host}/{self.dbname}?sslmode=require&channel_binding=require"
+            self.connection = psycopg.connect(conn_string)
         
         except psycopg.OperationalError as oe:
             print("❌ Operational error: Could not connect to the database.")
@@ -50,3 +47,20 @@ class MyDB:
             error, = e.args
             print(f"❌ SQL execution failed: {error.message}")
             return pd.DataFrame()
+
+    def db_version(self):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute("SELECT version();")
+                version = cursor.fetchone()     
+                version = version[0]           
+                match = re.search(r"PostgreSQL \d+\.\d+", version)
+                if match:
+                    version = match.group()
+                else:
+                    version = "PostgreSQL 0.0"
+                return version
+        except psycopg.DatabaseError as e:
+            error, = e.args
+            print(f"❌ SQL execution failed: {error.message}")
+            return "No version postgresql"
