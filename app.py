@@ -8,7 +8,7 @@ from my_postgresql import MyDB
 assets_folder = Path(__file__).parent / 'static'
 
 my_db = MyDB()
-my_db.connect()
+# my_db.connect()
 
 happiness_data = pd.read_csv('data/WHR2024.csv', usecols = ['Year', 'Country name', 'Ladder score', 'Explained by: Log GDP per capita'])
 dict_years = {str(year): str(year) for year in sorted(happiness_data['Year'].unique())}
@@ -40,8 +40,8 @@ app_ui = ui.page_navbar(
                 showcase=fa.icon_svg("face-smile")
             ),
             ui.value_box(
-                "Database test",
-                f"Version {my_db.db_version()}",
+                f"Database {my_db.my_db}",
+                f"Version {my_db.my_ver}",
                 "source: server",
                 showcase=fa.icon_svg("play")
             )

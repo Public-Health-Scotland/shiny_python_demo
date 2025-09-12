@@ -1,19 +1,25 @@
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import pandas as pd
 import psycopg
 import re
 import pandas as pd
 
 # Load environment variables
-load_dotenv()
+# load_dotenv()
 
 class MyDB:
     def __init__(self):
-        self.user = os.getenv("DBUSER")
-        self.password = os.getenv("DBPASSWORD")
-        self.host = os.getenv("HOST")
-        self.dbname = os.getenv("DATABASE")
+        self.user = "xxxx"
+        self.password = "xxxx"
+        self.host = "xxxx"
+        self.dbname = "xxxx"
+        # self.user = os.getenv("DBUSER")
+        # self.password = os.getenv("DBPASSWORD")
+        # self.host = os.getenv("HOST")
+        # self.dbname = os.getenv("DATABASE")
+        self.my_ver = os.getenv("DEMOVER")
+        self.my_db = os.getenv("DBTYPE")
         self.connection = None
     
     def connect(self):
