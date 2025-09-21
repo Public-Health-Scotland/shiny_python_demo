@@ -134,8 +134,7 @@ def server(input, output, session):
     @output
     @render.ui
     async def top10_bar():
-        data = happiness_data.filter(pl.col("Year") == int(input.mapyear()))
-        data = data.sort(by='Ladder score', descending=True).head(10)
+        data = happiness_data.filter(pl.col("Year") == int(input.year())).sort(by='Ladder score', descending=True).head(10)
         fig = px.bar(
             data,
             x='Ladder score',
@@ -178,13 +177,13 @@ def server(input, output, session):
     @output
     @render.ui
     async def linecountry():
-        data = happiness_data.filter(pl.col("Country name") == input.ddCountry())
-        data = data.sort(by='Year')
+        data = happiness_data.filter(pl.col("Country name") == input.ddCountry()).sort(by='Year')
         
-        fig = px.area(data, x = 'Year',y = 'Ladder score', color = "Country name")
+        fig = px.area(data, x = 'Year', y = 'Ladder score', 
+                      title= f"Area Graph Example {input.ddCountry()}",
+                      color = "Country name")
         fig.update_layout(
             margin={"r":0,"t":40,"l":0,"b":0},
-            title= f"Area Graph Example {input.ddCountry()}",
             xaxis_title='Date',
             yaxis_title='Value',
             template=current_theme()
