@@ -1,4 +1,4 @@
-import pandas as pd
+import polars as pl
 import plotly.express as px
 from shiny import App, render, reactive, ui
 import faicons as fa
@@ -6,9 +6,14 @@ from pathlib import Path
 
 assets_folder = Path(__file__).parent / 'static'
 
-happiness_data = pd.read_csv('data/WHR2024.csv', usecols = ['Year', 'Country name', 'Ladder score', 'Explained by: Log GDP per capita'])
-dict_years = {str(year): str(year) for year in sorted(happiness_data['Year'].unique())}
-country_list = happiness_data["Country name"].unique()
+happiness_data = pl.read_csv('data/WHR2024.csv', columns = ['Year', 'Country name', 'Ladder score', 'Explained by: Log GDP per capita'])
+
+list_years = sorted(happiness_data['Year'].unique())
+dict_years = {str(year): str(year) for year in list_years}
+happiness_data = happiness_data.with_columns(
+    pl.col("Country name").cast(pl.Categorical)
+)
+country_list = happiness_data["Country name"].unique().to_list()
 
 def my_dropdown_year(id):
     return ui.input_select(id, "Select a Year:", dict_years)
@@ -25,7 +30,7 @@ app_ui = ui.page_navbar(
             ),
             ui.value_box(
                 "KPI happiness scale",
-                f"from {min(happiness_data.Year)} to {max(happiness_data.Year)}",
+                f"from {min(list_years)} to {max(list_years)}",
                 "source: dataset",
                 showcase=fa.icon_svg("calendar")
             ),
@@ -57,7 +62,7 @@ app_ui = ui.page_navbar(
                             fa.icon_svg("ellipsis"),
                             style="position:absolute; top: 5px; right: 7px;",),
                         "Select a country",
-                        ui.input_selectize("ddCountry", "country", country_list.tolist()))),
+                        ui.input_selectize("ddCountry", "country", country_list))),
                     ui.output_ui("linecountry"),
                     full_screen=True),
             col_widths=[12]
@@ -129,8 +134,8 @@ def server(input, output, session):
     @output
     @render.ui
     async def top10_bar():
-        data = happiness_data[happiness_data['Year'] == int(input.year())]
-        data = data.sort_values(by='Ladder score', ascending=False).head(10)
+        data = happiness_data.filter(pl.col("Year") == int(input.mapyear()))
+        data = data.sort(by='Ladder score', descending=True).head(10)
         fig = px.bar(
             data,
             x='Ladder score',
@@ -145,7 +150,7 @@ def server(input, output, session):
     @output
     @render.ui
     async def happiness_map():
-        data = happiness_data[happiness_data['Year'] == int(input.mapyear())]
+        data = happiness_data.filter(pl.col("Year") == int(input.mapyear()))
         fig = px.choropleth(
             data,
             locations='Country name',  # Use country names for locations
@@ -173,8 +178,8 @@ def server(input, output, session):
     @output
     @render.ui
     async def linecountry():
-        data = happiness_data[happiness_data["Country name"] == input.ddCountry()]
-        data = data.sort_values(by='Year', ascending=True)
+        data = happiness_data.filter(pl.col("Country name") == input.ddCountry())
+        data = data.sort(by='Year')
         
         fig = px.area(data, x = 'Year',y = 'Ladder score', color = "Country name")
         fig.update_layout(
