@@ -91,6 +91,11 @@ app_ui = ui.page_navbar(
     ),
     ui.nav_spacer(), 
     ui.nav_control(ui.input_dark_mode(id="dark_mode_switch")),
+    # Inject Plotly JS globally
+    ui.head_content(
+        ui.tags.link(rel="icon", href="static/logo.png", type="image/x-icon"),
+        ui.tags.script(src="https://cdn.plot.ly/plotly-3.1.0.min.js")
+    ),
     title=ui.tags.a(
         ui.tags.img(src="static/logo.png", height="45px"), "",
         href="https://www.publichealthscotland.scot/",
@@ -140,7 +145,7 @@ def server(input, output, session):
             labels={'Ladder score': 'Happiness Score', 'Country name': 'Country'}
         )
         fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0}, template = current_theme())
-        return ui.HTML(fig.to_html(full_html=False))
+        return ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False))
 
     @output
     @render.ui
@@ -157,7 +162,7 @@ def server(input, output, session):
             title=f'World Happiness in {input.year()}'
         )
         fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0}, template = current_theme())
-        return ui.HTML(fig.to_html(full_html=False))
+        return ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False))
 
     @output
     @render.ui
@@ -168,7 +173,7 @@ def server(input, output, session):
                 y="Explained by: Log GDP per capita",
                 trendline="lowess")
         fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0}, template = current_theme())
-        return ui.HTML(fig.to_html(full_html=True))
+        return ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False))
 
     @output
     @render.ui
@@ -184,6 +189,6 @@ def server(input, output, session):
             yaxis_title='Value',
             template=current_theme()
         )
-        return ui.HTML(fig.to_html(full_html=True))
+        return ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False))
 
 app = App(app_ui, server, static_assets={"/static": assets_folder})
