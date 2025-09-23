@@ -33,3 +33,15 @@ You will need to run the following commands:
 - Python shiny natively support async functions
 - Python shiny has a ui.input_dark_mode (not in R shiny)
 - Python shiny has a ui.card (You have to install BSLIB in R)
+
+## Performance notes
+If you want a faster Plotly render, there are some adjustments to consider:
+- Set fig.to_html(full_html=False, include_plotlyjs=False), the full_html argument will avoid to create repeated html tags and include_plotlyjs won't load the plotly.js per chart.
+- We will need to globally load plotly.js. The element ui.head_content will contains ui.tags.script where we add src=https://cdn.plot.ly/plotly-3.1.0.min.js
+- This project runs with Plotly 6.3.0 which means it works with plotly-3.1.0.min.js
+
+## Resources
+
+[PHS colours](https://public-health-scotland.github.io/phsstyles/index.html)
+
+[External colour code palette](https://html-color.codes/)

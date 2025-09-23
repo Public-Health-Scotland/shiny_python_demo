@@ -1,5 +1,6 @@
 import pandas as pd
 import plotly.express as px
+import plotly.io as pio
 from shiny import App, render, reactive, ui
 import faicons as fa
 from pathlib import Path
@@ -9,6 +10,14 @@ assets_folder = Path(__file__).parent / 'static'
 happiness_data = pd.read_csv('data/WHR2024.csv', usecols = ['Year', 'Country name', 'Ladder score', 'Explained by: Log GDP per capita'])
 dict_years = {str(year): str(year) for year in sorted(happiness_data['Year'].unique())}
 country_list = happiness_data["Country name"].unique()
+
+# Load plotly_dark and ggplot2 templates, then modify layout - colorway in order to use PHS colours
+pio.templates["plotly_dark"]["layout"].update({
+    'colorway': ["#3F3685", "#9B4393", "#0078D4", "#83BB26", "#948DA3", "#1E7F84", "#6B5C85", "#C73918"]
+})
+pio.templates["ggplot2"]["layout"].update({
+    'colorway': ["#3F3685", "#9B4393", "#0078D4", "#83BB26", "#948DA3", "#1E7F84", "#6B5C85", "#C73918"]
+})
 
 def my_dropdown_year(id):
     return ui.input_select(id, "Select a Year:", dict_years)
@@ -119,7 +128,7 @@ def server(input, output, session):
     @reactive.event(input.dark_mode_switch)
     def _():
         ui.remove_ui("header_color")
-        color_gridheader = 'grey' if input.dark_mode_switch() == 'dark' else 'white'
+        color_gridheader = '#4c4a4b' if input.dark_mode_switch() == 'dark' else 'white'
         css_gridheader = f" shiny-data-frame {{ --shiny-datagrid-grid-header-bgcolor: {color_gridheader} !important }}"
         
         if css_gridheader:
@@ -129,7 +138,7 @@ def server(input, output, session):
     @output
     @render.data_frame
     def df_table():
-        return render.DataGrid(happiness_data, width="fit-content", height=350, filters=True)
+        return render.DataGrid(happiness_data, width="fit-content", height=430, filters=True)
 
     @output
     @render.ui
