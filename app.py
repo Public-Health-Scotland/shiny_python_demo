@@ -4,6 +4,7 @@ import plotly.io as pio
 from shiny import App, render, reactive, ui
 import faicons as fa
 from pathlib import Path
+from datetime import datetime
 
 assets_folder = Path(__file__).parent / 'static'
 
@@ -11,108 +12,117 @@ happiness_data = pd.read_csv('data/WHR2024.csv', usecols = ['Year', 'Country nam
 dict_years = {str(year): str(year) for year in sorted(happiness_data['Year'].unique())}
 country_list = happiness_data["Country name"].unique()
 
+list_colours = ["#9B4393", "#3F3685", "#0078D4", "#83BB26", "#948DA3", "#1E7F84", "#6B5C85", "#C73918"]
+
 # Load plotly_dark and ggplot2 templates, then modify layout - colorway in order to use PHS colours
 pio.templates["plotly_dark"]["layout"].update({
-    'colorway': ["#3F3685", "#9B4393", "#0078D4", "#83BB26", "#948DA3", "#1E7F84", "#6B5C85", "#C73918"]
+    'colorway': list_colours
 })
 pio.templates["ggplot2"]["layout"].update({
-    'colorway': ["#3F3685", "#9B4393", "#0078D4", "#83BB26", "#948DA3", "#1E7F84", "#6B5C85", "#C73918"]
+    'colorway': list_colours
 })
 
 def my_dropdown_year(id):
     return ui.input_select(id, "Select a Year:", dict_years)
 
-app_ui = ui.page_navbar(
-    ui.nav_panel("Home", 
-        ui.h2("General info"),
-        ui.layout_column_wrap(
-            ui.value_box(
-                "KPI number of records",
-                f"Rows {happiness_data.shape[0]} cols {happiness_data.shape[1]}",
-                "source: dataset",
-                showcase = fa.icon_svg("database")
+app_ui = ui.page_fillable(
+    ui.page_navbar(
+        ui.nav_panel("Home", 
+            ui.h2("General info"),
+            ui.layout_column_wrap(
+                ui.value_box(
+                    "KPI number of records",
+                    f"Rows {happiness_data.shape[0]} cols {happiness_data.shape[1]}",
+                    "source: dataset",
+                    showcase = fa.icon_svg("database", width="50px", fill="#9B4393 !important")
+                ),
+                ui.value_box(
+                    "KPI happiness scale",
+                    f"from {min(happiness_data.Year)} to {max(happiness_data.Year)}",
+                    "source: dataset",
+                    showcase=fa.icon_svg("calendar", width="50px", fill="#9B4393 !important")
+                ),
+                ui.value_box(
+                    "KPI Title",
+                    f"from {round(min(happiness_data['Ladder score']),1)} to {round(max(happiness_data['Ladder score']), 1)}",
+                    "source: dataset",
+                    showcase=fa.icon_svg("face-smile", width="50px", fill="#9B4393 !important")
+                )
             ),
-            ui.value_box(
-                "KPI happiness scale",
-                f"from {min(happiness_data.Year)} to {max(happiness_data.Year)}",
-                "source: dataset",
-                showcase=fa.icon_svg("calendar")
+            
+            # First row: 2 cards side by side
+            ui.layout_columns(
+                ui.card(ui.card_header("happiness data"),
+                        ui.output_data_frame("df_table"),
+                        full_screen=True
+                ),
+                ui.card(ui.card_header("Scatter plot"), 
+                        ui.output_ui("scatterplot"), 
+                        full_screen=True),
+                col_widths=[6, 6]
             ),
-            ui.value_box(
-                "KPI Title",
-                f"from {round(min(happiness_data['Ladder score']),1)} to {round(max(happiness_data['Ladder score']), 1)}",
-                "source: dataset",
-                showcase=fa.icon_svg("face-smile")
+
+            # Second row: 1 card centered
+            ui.layout_columns(
+                ui.card(ui.card_header("time happiness",
+                        ui.popover(
+                            ui.span(
+                                fa.icon_svg("ellipsis"),
+                                style="position:absolute; top: 5px; right: 7px;",),
+                            "Select a country",
+                            ui.input_selectize("ddCountry", "country", country_list.tolist()))),
+                        ui.output_ui("linecountry"),
+                        full_screen=True),
+                col_widths=[12]
             )
         ),
-        
-        # First row: 2 cards side by side
-        ui.layout_columns(
-            ui.card(ui.card_header("happiness data"),
-                    ui.output_data_frame("df_table"),
-                    full_screen=True
-            ),
-            ui.card(ui.card_header("Scatter plot"), 
-                    ui.output_ui("scatterplot"), 
-                    full_screen=True),
-            col_widths=[6, 6]
+        ui.nav_panel("Bar plot", 
+            ui.h2("Bar plot happiness"),
+            ui.layout_sidebar(
+                ui.sidebar(
+                    ui.h3("World Happiness top 10"),
+                    my_dropdown_year("year")
+                ),
+                ui.output_ui("top10_bar")
+            )
         ),
-
-        # Second row: 1 card centered
-        ui.layout_columns(
-            ui.card(ui.card_header("time happiness",
-                    ui.popover(
-                        ui.span(
-                            fa.icon_svg("ellipsis"),
-                            style="position:absolute; top: 5px; right: 7px;",),
-                        "Select a country",
-                        ui.input_selectize("ddCountry", "country", country_list.tolist()))),
-                    ui.output_ui("linecountry"),
-                    full_screen=True),
-            col_widths=[12]
-        )
-    ),
-    ui.nav_panel("Bar plot", 
-        ui.h2("Bar plot happiness"),
-        ui.layout_sidebar(
-            ui.sidebar(
-                ui.h3("World Happiness top 10"),
-                my_dropdown_year("year")
-            ),
-            ui.output_ui("top10_bar")
-        )
-    ),
-    ui.nav_panel("Geodata", 
-        ui.h2("Cloropleth happiness"),
-        ui.layout_sidebar(
-            ui.sidebar(
-                ui.h3("Map plot"),
-                my_dropdown_year("mapyear")
-            ),
-            ui.output_ui("happiness_map")
-        )
-    ),
-    ui.nav_menu(
-        "More data",
-        ui.nav_panel("Database", ui.h2("Information from db")),
-        ui.nav_panel("Contact", ui.h2("Contact us")),
-        ui.nav_panel("Help", ui.h2("Help Page"))
-    ),
-    ui.nav_spacer(), 
-    ui.nav_control(ui.input_dark_mode(id="dark_mode_switch")),
-    # Inject Plotly JS globally
-    ui.head_content(
-        ui.tags.link(rel="icon", href="static/logo.png", type="image/x-icon"),
-        ui.tags.script(src="https://cdn.plot.ly/plotly-3.1.0.min.js")
-    ),
-    title=ui.tags.a(
-        ui.tags.img(src="static/logo.png", height="45px"), "",
-        href="https://www.publichealthscotland.scot/",
-        target="_blank",
-        class_="navbar-brand d-flex align-items-center"
-    ),
-    lang="en",
-    navbar_options=ui.navbar_options(position="fixed-top")
+        ui.nav_panel("Geodata", 
+            ui.h2("Cloropleth happiness"),
+            ui.layout_sidebar(
+                ui.sidebar(
+                    ui.h3("Map plot"),
+                    my_dropdown_year("mapyear")
+                ),
+                ui.output_ui("happiness_map")
+            )
+        ),
+        ui.nav_menu(
+            "More data",
+            ui.nav_panel("Database", ui.h2("Information from db")),
+            ui.nav_panel("Contact", ui.h2("Contact us")),
+            ui.nav_panel("Help", ui.h2("Help Page"))
+        ),
+        ui.nav_spacer(), 
+        ui.nav_control(ui.input_dark_mode(id="dark_mode_switch")),
+        # Inject Plotly JS globally
+        ui.head_content(
+            ui.tags.link(rel="icon", href="static/logo.png", type="image/x-icon"),
+            ui.tags.script(src="https://cdn.plot.ly/plotly-3.1.0.min.js")
+        ),
+        title=ui.tags.a(
+            ui.tags.img(src="static/logo.png", height="45px"), "",
+            href="https://www.publichealthscotland.scot/",
+            target="_blank",
+            class_="navbar-brand d-flex align-items-center"
+        ),
+        lang="en",
+        navbar_options=ui.navbar_options(position="fixed-top"),
+        footer=ui.h6(
+            f"Made by G FO © {datetime.now().year}",
+            style="color: white !important; text-align: center;"
+        ),
+        window_title="World happyness"
+    )
 )
 
 def server(input, output, session):
@@ -166,7 +176,7 @@ def server(input, output, session):
             locationmode='country names',  # Specify that we're using country names
             color='Ladder score',  # Use 'Life Ladder' for happiness values
             hover_name='Country name',  # Use 'Country name' for the hover information
-            color_continuous_scale=px.colors.sequential.YlGnBu,
+            color_discrete_sequence=px.colors.sequential.YlGnBu,
             labels={'Ladder score': 'Life Ladder Score'},
             title=f'World Happiness in {input.year()}'
         )
