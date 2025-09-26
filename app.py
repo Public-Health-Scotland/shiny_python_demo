@@ -14,12 +14,15 @@ country_list = happiness_data["Country name"].unique()
 
 list_colours = ["#9B4393", "#3F3685", "#0078D4", "#83BB26", "#948DA3", "#1E7F84", "#6B5C85", "#C73918"]
 
-# Load plotly_dark and ggplot2 templates, then modify layout - colorway in order to use PHS colours
+# Load the built-in template
+colour_list = ["#3F3685", "#9B4393", "#0078D4", "#83BB26", "#948DA3", "#1E7F84", "#6B5C85", "#C73918",
+                "#655E9D", "#9F9BC2", "#AF69A9", "#CDA1C9", "#3393DD", "#80BCEA", "#9CC951", "#C1DD93"]
+
 pio.templates["plotly_dark"]["layout"].update({
-    'colorway': list_colours
+    'colorway': colour_list
 })
 pio.templates["ggplot2"]["layout"].update({
-    'colorway': list_colours
+    'colorway': colour_list
 })
 
 def my_dropdown_year(id):
@@ -119,7 +122,7 @@ app_ui = ui.page_fillable(
         navbar_options=ui.navbar_options(position="fixed-top"),
         footer=ui.h6(
             f"Made by G FO © {datetime.now().year}",
-            style="color: white !important; text-align: center;"
+            style="color: white !important; text-align: center; line-height: 1.6; margin-bottom: 3em; margin-top: 2em;"
         ),
         window_title="World happyness"
     )
@@ -161,9 +164,10 @@ def server(input, output, session):
             y='Country name',
             orientation='h',
             title=f'Top 10 Happiest Countries in {input.year()}',
-            labels={'Ladder score': 'Happiness Score', 'Country name': 'Country'}
+            labels={'Ladder score': 'Happiness Score', 'Country name': 'Country'}, 
+            template = current_theme()
         )
-        fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0}, template = current_theme())
+        fig.update_layout(margin=dict(t=40, b=0, l=0, r=0))
         return ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False))
 
     @output
@@ -178,9 +182,10 @@ def server(input, output, session):
             hover_name='Country name',  # Use 'Country name' for the hover information
             color_discrete_sequence=px.colors.sequential.YlGnBu,
             labels={'Ladder score': 'Life Ladder Score'},
-            title=f'World Happiness in {input.year()}'
+            title=f'World Happiness in {input.year()}', 
+            template = current_theme()
         )
-        fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0}, template = current_theme())
+        fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0})
         return ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False))
 
     @output
@@ -190,8 +195,10 @@ def server(input, output, session):
                 happiness_data,
                 x="Ladder score",
                 y="Explained by: Log GDP per capita",
-                trendline="lowess")
-        fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0}, template = current_theme())
+                trendline="lowess", 
+                template = current_theme()
+        )
+        fig.update_layout(margin=dict(t=40, b=0, l=0, r=0))
         return ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False))
 
     @output
@@ -200,13 +207,12 @@ def server(input, output, session):
         data = happiness_data[happiness_data["Country name"] == input.ddCountry()]
         data = data.sort_values(by='Year', ascending=True)
         
-        fig = px.area(data, x = 'Year',y = 'Ladder score', color = "Country name")
+        fig = px.area(data, x = 'Year', y = 'Ladder score', color = "Country name", template=current_theme())
         fig.update_layout(
-            margin={"r":0,"t":40,"l":0,"b":0},
+            margin=dict(t=40, b=0, l=0, r=0),
             title= f"Area Graph Example {input.ddCountry()}",
             xaxis_title='Date',
-            yaxis_title='Value',
-            template=current_theme()
+            yaxis_title='Value'
         )
         return ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False))
 

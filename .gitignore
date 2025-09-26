@@ -194,6 +194,8 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-# sample
-dashboard-tips
-rsconnect-python
+# posit deployment folders
+.posit
+
+# rsconnect deployment files
+rsconnect-python/
