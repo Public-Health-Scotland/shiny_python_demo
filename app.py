@@ -1,18 +1,15 @@
-import pandas as pd
 import plotly.express as px
 import plotly.io as pio
 from shiny import App, render, reactive, ui
 import faicons as fa
 from pathlib import Path
 from datetime import datetime
+from data.data_con import DataLoader
 
 assets_folder = Path(__file__).parent / 'static'
 
-happiness_data = pd.read_csv('data/WHR2024.csv', usecols = ['Year', 'Country name', 'Ladder score', 'Explained by: Log GDP per capita'])
-dict_years = {str(year): str(year) for year in sorted(happiness_data['Year'].unique())}
-country_list = happiness_data["Country name"].unique()
-
-list_colours = ["#9B4393", "#3F3685", "#0078D4", "#83BB26", "#948DA3", "#1E7F84", "#6B5C85", "#C73918"]
+my_data_loader = DataLoader()
+my_data_loader.load_data()
 
 # Load the built-in template
 colour_list = ["#3F3685", "#9B4393", "#0078D4", "#83BB26", "#948DA3", "#1E7F84", "#6B5C85", "#C73918",
@@ -26,28 +23,29 @@ pio.templates["ggplot2"]["layout"].update({
 })
 
 def my_dropdown_year(id):
+    dict_years = my_data_loader.get_dict_years()
     return ui.input_select(id, "Select a Year:", dict_years)
 
 app_ui = ui.page_fillable(
     ui.page_navbar(
         ui.nav_panel("Home", 
-            ui.h2("General info"),
+            # ui.h3("General info"),
             ui.layout_column_wrap(
                 ui.value_box(
                     "KPI number of records",
-                    f"Rows {happiness_data.shape[0]} cols {happiness_data.shape[1]}",
+                    my_data_loader.get_shape(),
                     "source: dataset",
                     showcase = fa.icon_svg("database", width="50px", fill="#9B4393 !important")
                 ),
                 ui.value_box(
                     "KPI happiness scale",
-                    f"from {min(happiness_data.Year)} to {max(happiness_data.Year)}",
+                    my_data_loader.get_range_years(),
                     "source: dataset",
                     showcase=fa.icon_svg("calendar", width="50px", fill="#9B4393 !important")
                 ),
                 ui.value_box(
                     "KPI Title",
-                    f"from {round(min(happiness_data['Ladder score']),1)} to {round(max(happiness_data['Ladder score']), 1)}",
+                    my_data_loader.get_range_ladder_score(),
                     "source: dataset",
                     showcase=fa.icon_svg("face-smile", width="50px", fill="#9B4393 !important")
                 )
@@ -73,14 +71,14 @@ app_ui = ui.page_fillable(
                                 fa.icon_svg("ellipsis"),
                                 style="position:absolute; top: 5px; right: 7px;",),
                             "Select a country",
-                            ui.input_selectize("ddCountry", "country", country_list.tolist()))),
+                            ui.input_selectize("ddCountry", "country", my_data_loader.get_country_list() ))),
                         ui.output_ui("linecountry"),
                         full_screen=True),
                 col_widths=[12]
             )
         ),
         ui.nav_panel("Bar plot", 
-            ui.h2("Bar plot happiness"),
+            # ui.h3("Bar plot happiness"),
             ui.layout_sidebar(
                 ui.sidebar(
                     ui.h3("World Happiness top 10"),
@@ -90,7 +88,7 @@ app_ui = ui.page_fillable(
             )
         ),
         ui.nav_panel("Geodata", 
-            ui.h2("Cloropleth happiness"),
+            # ui.h3("Cloropleth happiness"),
             ui.layout_sidebar(
                 ui.sidebar(
                     ui.h3("Map plot"),
@@ -119,7 +117,7 @@ app_ui = ui.page_fillable(
             class_="navbar-brand d-flex align-items-center"
         ),
         lang="en",
-        navbar_options=ui.navbar_options(position="fixed-top"),
+        # navbar_options=ui.navbar_options(position="fixed-top"),
         footer=ui.h6(
             f"Made by G FO © {datetime.now().year}",
             style="color: white !important; text-align: center; line-height: 1.6; margin-bottom: 3em; margin-top: 2em;"
@@ -151,13 +149,12 @@ def server(input, output, session):
     @output
     @render.data_frame
     def df_table():
-        return render.DataGrid(happiness_data, width="fit-content", height=430, filters=True)
+        return render.DataGrid(my_data_loader.happiness_data, width="fit-content", height=430, filters=True)
 
     @output
     @render.ui
     async def top10_bar():
-        data = happiness_data[happiness_data['Year'] == int(input.year())]
-        data = data.sort_values(by='Ladder score', ascending=False).head(10)
+        data = await my_data_loader.get_top10_happiest_countries(int(input.year()))
         fig = px.bar(
             data,
             x='Ladder score',
@@ -173,7 +170,7 @@ def server(input, output, session):
     @output
     @render.ui
     async def happiness_map():
-        data = happiness_data[happiness_data['Year'] == int(input.mapyear())]
+        data = await my_data_loader.get_data_by_year(int(input.mapyear()))
         fig = px.choropleth(
             data,
             locations='Country name',  # Use country names for locations
@@ -192,7 +189,7 @@ def server(input, output, session):
     @render.ui
     async def scatterplot():
         fig = px.scatter(
-                happiness_data,
+                my_data_loader.happiness_data,
                 x="Ladder score",
                 y="Explained by: Log GDP per capita",
                 trendline="lowess", 
@@ -204,8 +201,7 @@ def server(input, output, session):
     @output
     @render.ui
     async def linecountry():
-        data = happiness_data[happiness_data["Country name"] == input.ddCountry()]
-        data = data.sort_values(by='Year', ascending=True)
+        data = await my_data_loader.get_data_by_country(input.ddCountry())
         
         fig = px.area(data, x = 'Year', y = 'Ladder score', color = "Country name", template=current_theme())
         fig.update_layout(
