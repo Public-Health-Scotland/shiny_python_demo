@@ -29,7 +29,7 @@ def my_dropdown_year(id):
 app_ui = ui.page_fillable(
     ui.page_navbar(
         ui.nav_panel("Home", 
-            # ui.h3("General info"),
+            ui.h3("General info"),
             ui.layout_column_wrap(
                 ui.value_box(
                     "KPI number of records",
@@ -78,7 +78,7 @@ app_ui = ui.page_fillable(
             )
         ),
         ui.nav_panel("Bar plot", 
-            # ui.h3("Bar plot happiness"),
+            ui.h3("Bar plot happiness"),
             ui.layout_sidebar(
                 ui.sidebar(
                     ui.h3("World Happiness top 10"),
@@ -88,7 +88,7 @@ app_ui = ui.page_fillable(
             )
         ),
         ui.nav_panel("Geodata", 
-            # ui.h3("Cloropleth happiness"),
+            ui.h3("Cloropleth happiness"),
             ui.layout_sidebar(
                 ui.sidebar(
                     ui.h3("Map plot"),
@@ -117,7 +117,7 @@ app_ui = ui.page_fillable(
             class_="navbar-brand d-flex align-items-center"
         ),
         lang="en",
-        # navbar_options=ui.navbar_options(position="fixed-top"),
+        navbar_options=ui.navbar_options(position="fixed-top"),
         footer=ui.h6(
             f"Made by G FO © {datetime.now().year}",
             style="color: white !important; text-align: center; line-height: 1.6; margin-bottom: 3em; margin-top: 2em;"
