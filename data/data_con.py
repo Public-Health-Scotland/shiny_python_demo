@@ -62,3 +62,9 @@ class DataLoader:
             return self.happiness_data[self.happiness_data["Country name"] == country].sort_values(by='Year', ascending=True)
         else:
             raise ValueError("Data not loaded. Please call load_data() first.")
+
+    async def get_clean_data_for_scatter(self):
+        if self.happiness_data is not None:
+            return self.happiness_data[["Ladder score", "Explained by: Log GDP per capita"]].dropna()
+        else:
+            raise ValueError("Data not loaded. Please call load_data() first.")

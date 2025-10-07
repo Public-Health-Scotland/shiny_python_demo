@@ -165,7 +165,11 @@ def server(input, output, session):
             template = current_theme()
         )
         fig.update_layout(margin=dict(t=40, b=0, l=0, r=0))
-        return ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False))
+        return ui.tags.div(
+            ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False)),
+            aria_label="Bar chart showing top 10 Ladder score per country",
+            role="img"
+        )
 
     @output
     @render.ui
@@ -183,26 +187,34 @@ def server(input, output, session):
             template = current_theme()
         )
         fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0})
-        return ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False))
+        return ui.tags.div(
+            ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False)),
+            aria_label="Heat map about Ladder score by country",
+            role="img"
+        )
 
     @output
     @render.ui
     async def scatterplot():
+        data = await my_data_loader.get_clean_data_for_scatter()
         fig = px.scatter(
-                my_data_loader.happiness_data,
+                data,
                 x="Ladder score",
                 y="Explained by: Log GDP per capita",
                 trendline="lowess", 
                 template = current_theme()
         )
         fig.update_layout(margin=dict(t=40, b=0, l=0, r=0))
-        return ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False))
+        return ui.tags.div(
+            ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False)),
+            aria_label="Scatterplot between Ladder score and GDP per capita",
+            role="img"
+        )
 
     @output
     @render.ui
     async def linecountry():
         data = await my_data_loader.get_data_by_country(input.ddCountry())
-        
         fig = px.area(data, x = 'Year', y = 'Ladder score', color = "Country name", template=current_theme())
         fig.update_layout(
             margin=dict(t=40, b=0, l=0, r=0),
@@ -210,6 +222,10 @@ def server(input, output, session):
             xaxis_title='Date',
             yaxis_title='Value'
         )
-        return ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False))
+        return ui.tags.div(
+            ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False)),
+            aria_label="Area graph based on Ladder score by year per country",
+            role="img"
+        )
 
 app = App(app_ui, server, static_assets={"/static": assets_folder})
