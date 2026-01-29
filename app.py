@@ -26,7 +26,10 @@ def my_dropdown_year(id):
     return ui.input_select(id, "Select a Year:", dict_years)
 
 app_ui = ui.page_navbar(
-    ui.nav_panel("Home", 
+    ui.nav_panel(
+        # Name and icon
+        ui.TagList(fa.icon_svg("house"), "Home"),
+
         ui.layout_column_wrap(
             ui.value_box(
                 "KPI number of records",
@@ -74,7 +77,10 @@ app_ui = ui.page_navbar(
             col_widths=[12]
         )
     ),
-    ui.nav_panel("Bar plot", 
+    ui.nav_panel(
+        # Name and icon
+        ui.TagList(fa.icon_svg("chart-line"), "Bar plot"),
+
         ui.layout_sidebar(
             ui.sidebar(
                 ui.h3("World Happiness top 10"),
@@ -83,7 +89,10 @@ app_ui = ui.page_navbar(
             ui.output_ui("top10_bar")
         )
     ),
-    ui.nav_panel("Geodata", 
+    ui.nav_panel(
+        # Name and icon
+        ui.TagList(fa.icon_svg("map"), "Geodata"),
+
         ui.layout_sidebar(
             ui.sidebar(
                 ui.h3("Map plot"),
@@ -93,17 +102,31 @@ app_ui = ui.page_navbar(
         )
     ),
     ui.nav_menu(
-        "More data",
-        ui.nav_panel("Database", ui.h2("Information from db")),
-        ui.nav_panel("Contact", ui.h2("Contact us")),
-        ui.nav_panel("Help", ui.h2("Help Page"))
+        # Name and icon
+        ui.TagList(fa.icon_svg("plus"), "More data"),
+
+        ui.nav_panel(
+            # Name and icon
+            ui.TagList(fa.icon_svg("database"), "Database"),
+            ui.h2("Information from db")
+        ),
+        ui.nav_panel(
+            # Name and icon
+            ui.TagList(fa.icon_svg("codepen"), "Contact"),
+            ui.h2("Contact us")
+        ),
+        ui.nav_panel(
+            # Name and icon
+            ui.TagList(fa.icon_svg("people-carry-box"), "Help"),
+            ui.h2("Help Page")
+        )
     ),
     ui.nav_spacer(), 
     ui.nav_control(ui.input_dark_mode(id="dark_mode_switch")),
     # Inject Plotly JS globally
     ui.head_content(
         ui.tags.link(rel="icon", href="static/logo.png", type="image/x-icon"),
-        ui.tags.script(src="https://cdn.plot.ly/plotly-3.1.0.min.js"),
+        ui.tags.script(src="https://cdn.plot.ly/plotly-3.3.1.min.js"),
         ui.tags.style("body { padding-top: 70px; }")
     ),
     title=ui.tags.a(

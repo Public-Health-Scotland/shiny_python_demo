@@ -1,4 +1,4 @@
 [project]
 name = "shiny_python_demo"
 version = "1.0.4"
-requires-python = ">=3.13.0"
+requires-python = ">=3.13.8"

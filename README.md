@@ -12,8 +12,7 @@ There are some Plotly examples like bar, area and cloropleth
 Previous steps to prepare your VS Code for Python here: https://github.com/Public-Health-Scotland/vscode_prep
 
 Don't forget to activate your environment to run this example
-You only need to type on terminal: shiny run app.py
-![alt text](img/image.png)
+You only need to type in terminal: shiny run app.py
 
 Note: You can run your Shiny app and make it visible in your local network: shiny run --host 0.0.0.0 --port 8000 app.py
 
@@ -45,3 +44,6 @@ If you want a faster Plotly render, there are some adjustments to consider:
 [PHS colours](https://public-health-scotland.github.io/phsstyles/index.html)
 
 [External colour code palette](https://html-color.codes/)
+
+[Python package faicons](https://github.com/posit-dev/py-faicons)
+
