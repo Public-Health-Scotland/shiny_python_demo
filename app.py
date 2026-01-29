@@ -2,13 +2,14 @@ import plotly.express as px
 import plotly.io as pio
 from shiny import App, render, reactive, ui
 import faicons as fa
+import getpass
 from pathlib import Path
 from data.data_con import DataLoader
 
 assets_folder = Path(__file__).parent / 'static'
 
-my_data_loader = DataLoader()
-my_data_loader.load_data()
+my_data = DataLoader()
+my_data.load_data()
 
 # Load the built-in template
 colour_list = ["#3F3685", "#9B4393", "#0078D4", "#83BB26", "#948DA3", "#1E7F84", "#6B5C85", "#C73918",
@@ -22,8 +23,7 @@ pio.templates["ggplot2"]["layout"].update({
 })
 
 def my_dropdown_year(id):
-    dict_years = my_data_loader.get_dict_years()
-    return ui.input_select(id, "Select a Year:", dict_years)
+    return ui.input_select(id, "Select a Year:", my_data.dict_years)
 
 app_ui = ui.page_navbar(
     ui.nav_panel(
@@ -31,24 +31,9 @@ app_ui = ui.page_navbar(
         ui.TagList(fa.icon_svg("house"), "Home"),
 
         ui.layout_column_wrap(
-            ui.value_box(
-                "KPI number of records",
-                my_data_loader.get_shape(),
-                "source: dataset",
-                showcase = fa.icon_svg("database", width="50px", fill="#9B4393 !important")
-            ),
-            ui.value_box(
-                "KPI happiness scale",
-                my_data_loader.get_range_years(),
-                "source: dataset",
-                showcase=fa.icon_svg("calendar", width="50px", fill="#9B4393 !important")
-            ),
-            ui.value_box(
-                "KPI Title",
-                my_data_loader.get_range_ladder_score(),
-                "source: dataset",
-                showcase=fa.icon_svg("face-smile", width="50px", fill="#9B4393 !important")
-            )
+            ui.output_ui("kpi_records"),
+            ui.output_ui("kpi_scale"),
+            ui.output_ui("kpi_other")
         ),
         
         # First row: 2 cards side by side
@@ -71,7 +56,7 @@ app_ui = ui.page_navbar(
                             fa.icon_svg("ellipsis"),
                             style="position:absolute; top: 5px; right: 7px;",),
                         "Select a country",
-                        ui.input_selectize("ddCountry", "country", my_data_loader.get_country_list() ))),
+                        ui.input_selectize("ddCountry", "country", my_data.country_list ))),
                     ui.output_ui("linecountry"),
                     full_screen=True),
             col_widths=[12]
@@ -121,7 +106,15 @@ app_ui = ui.page_navbar(
             ui.h2("Help Page")
         )
     ),
-    ui.nav_spacer(), 
+    ui.nav_spacer(),
+    ui.nav_control(
+        ui.div(
+            fa.icon_svg("person-circle-check"),
+            ui.span(ui.output_text("welcome"), style="margin-left: 6px;"),
+            style="display: flex; align-items: center; padding-right: 15px;"
+        )
+    ),
+    # ui.nav_control(ui.output_text("welcome")), 
     ui.nav_control(ui.input_dark_mode(id="dark_mode_switch")),
     # Inject Plotly JS globally
     ui.head_content(
@@ -138,11 +131,10 @@ app_ui = ui.page_navbar(
     lang="en",
     navbar_options=ui.navbar_options(position="fixed-top"),
     footer=ui.tags.footer(
-        ui.tags.span("© Developed by G FO - "),
+        ui.tags.span("© Developed by Data science team - "),
         ui.tags.script("document.write(new Date().getFullYear());"),
         class_="text-center p-2",
         role="contentinfo"
-        # style="color: white !important; text-align: center; line-height: 1.6; margin-bottom: 3em; margin-top: 2em;"
     ),
     window_title="World happyness"
 )
@@ -168,14 +160,62 @@ def server(input, output, session):
             ui.insert_ui(style, selector='head')
     
     @output
+    @render.text
+    async def welcome():
+        # get current user
+        user_name = session.user
+        if user_name is None:
+            user_name = getpass.getuser()
+        return f"Welcome {user_name}"
+    
+    async def kpi_value_box(title: str, icon_name: str, message: str, current: float, historical: float):
+        # get colour for your icon and current value
+        my_kpi_color = "#9B4393"
+        # build your icon with the color
+        icon = fa.icon_svg(icon_name, width="50px", fill=f"{my_kpi_color} !important")
+        
+        value_block = ui.div(
+            *filter(None, [ui.strong(f"{historical}") if historical is not None else None]),
+            ui.span(
+                f"/ {current}",
+                style=f"margin-left:8px;color:{my_kpi_color};font-weight:600;"
+            ),
+            ui.br(),
+            ui.span(
+                f"{message}",
+                style="font-size:0.40em;font-weight:100;"
+            )
+        )
+
+        return ui.value_box(title=title, value=value_block, showcase=icon)
+
+    @output
+    @render.ui
+    async def kpi_records():
+        return await kpi_value_box("KPI number of records", "database", 
+                                    "(Columns - Rows)", my_data.happiness_data.shape[0], my_data.happiness_data.shape[1])
+
+    @output
+    @render.ui
+    async def kpi_scale():
+        return await kpi_value_box("KPI happiness scale", "calendar", 
+                                    "Year (Min - Max)", my_data.happiness_data.Year.max(), my_data.happiness_data.Year.min())
+
+    @output
+    @render.ui
+    async def kpi_other():
+        return await kpi_value_box("KPI Title", "face-smile", 
+                                    "Score (Min - max)", round(my_data.happiness_data['Ladder score'].max(), 2), round(my_data.happiness_data['Ladder score'].min(), 2))
+    
+    @output
     @render.data_frame
     def df_table():
-        return render.DataGrid(my_data_loader.happiness_data, width="fit-content", height=430, filters=True)
+        return render.DataGrid(my_data.happiness_data, width="fit-content", height=430, filters=True)
 
     @output
     @render.ui
     async def top10_bar():
-        data = await my_data_loader.get_top10_happiest_countries(int(input.year()))
+        data = await my_data.get_top10_happiest_countries(int(input.year()))
         fig = px.bar(
             data,
             x='Ladder score',
@@ -195,7 +235,7 @@ def server(input, output, session):
     @output
     @render.ui
     async def happiness_map():
-        data = await my_data_loader.get_data_by_year(int(input.mapyear()))
+        data = await my_data.get_data_by_year(int(input.mapyear()))
         fig = px.choropleth(
             data,
             locations='Country name',  # Use country names for locations
@@ -217,7 +257,7 @@ def server(input, output, session):
     @output
     @render.ui
     async def scatterplot():
-        data = await my_data_loader.get_clean_data_for_scatter()
+        data = await my_data.get_clean_data_for_scatter()
         fig = px.scatter(
                 data,
                 x="Ladder score",
@@ -235,7 +275,7 @@ def server(input, output, session):
     @output
     @render.ui
     async def linecountry():
-        data = await my_data_loader.get_data_by_country(input.ddCountry())
+        data = await my_data.get_data_by_country(input.ddCountry())
         fig = px.area(data, x = 'Year', y = 'Ladder score', color = "Country name", template=current_theme())
         fig.update_layout(
             margin=dict(t=40, b=0, l=0, r=0),
