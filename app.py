@@ -1,26 +1,14 @@
-import plotly.express as px
-import plotly.io as pio
 from shiny import App, render, reactive, ui
 import faicons as fa
 import getpass
 from pathlib import Path
 from data.data_con import DataLoader
+from view.myplots import PlotBuilder
 
 assets_folder = Path(__file__).parent / 'static'
 
 my_data = DataLoader()
 my_data.load_data()
-
-# Load the built-in template
-colour_list = ["#3F3685", "#9B4393", "#0078D4", "#83BB26", "#948DA3", "#1E7F84", "#6B5C85", "#C73918",
-                "#655E9D", "#9F9BC2", "#AF69A9", "#CDA1C9", "#3393DD", "#80BCEA", "#9CC951", "#C1DD93"]
-
-pio.templates["plotly_dark"]["layout"].update({
-    'colorway': colour_list
-})
-pio.templates["ggplot2"]["layout"].update({
-    'colorway': colour_list
-})
 
 def my_dropdown_year(id):
     return ui.input_select(id, "Select a Year:", my_data.dict_years)
@@ -140,6 +128,8 @@ app_ui = ui.page_navbar(
 )
 
 def server(input, output, session):
+    myplots = PlotBuilder()
+
     @reactive.Calc
     def current_theme():
         if input.dark_mode_switch() == "dark":
@@ -215,78 +205,32 @@ def server(input, output, session):
     @output
     @render.ui
     async def top10_bar():
-        data = await my_data.get_top10_happiest_countries(int(input.year()))
-        fig = px.bar(
-            data,
-            x='Ladder score',
-            y='Country name',
-            orientation='h',
-            title=f'Top 10 Happiest Countries in {input.year()}',
-            labels={'Ladder score': 'Happiness Score', 'Country name': 'Country'}, 
-            template = current_theme()
-        )
-        fig.update_layout(margin=dict(t=40, b=0, l=0, r=0))
-        return ui.tags.div(
-            ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False)),
-            aria_label="Bar chart showing top 10 Ladder score per country",
-            role="img"
-        )
+        year = int(input.year())
+        data = await my_data.get_top10_happiest_countries(year)
+        plot, descript = await myplots.build_top10_bar(data, current_theme(), year)
+        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
     @output
     @render.ui
     async def happiness_map():
-        data = await my_data.get_data_by_year(int(input.mapyear()))
-        fig = px.choropleth(
-            data,
-            locations='Country name',  # Use country names for locations
-            locationmode='country names',  # Specify that we're using country names
-            color='Ladder score',  # Use 'Life Ladder' for happiness values
-            hover_name='Country name',  # Use 'Country name' for the hover information
-            color_discrete_sequence=px.colors.sequential.YlGnBu,
-            labels={'Ladder score': 'Life Ladder Score'},
-            title=f'World Happiness in {input.year()}', 
-            template = current_theme()
-        )
-        fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0})
-        return ui.tags.div(
-            ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False)),
-            aria_label="Heat map about Ladder score by country",
-            role="img"
-        )
+        year = int(input.mapyear())
+        data = await my_data.get_data_by_year(year)
+        plot, descript = await myplots.build_happiness_map(data, current_theme(), year)
+        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
     @output
     @render.ui
     async def scatterplot():
         data = await my_data.get_clean_data_for_scatter()
-        fig = px.scatter(
-                data,
-                x="Ladder score",
-                y="Explained by: Log GDP per capita",
-                trendline="lowess", 
-                template = current_theme()
-        )
-        fig.update_layout(margin=dict(t=40, b=0, l=0, r=0))
-        return ui.tags.div(
-            ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False)),
-            aria_label="Scatterplot between Ladder score and GDP per capita",
-            role="img"
-        )
+        plot, descript = await myplots.build_scatterplot(data, current_theme())
+        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
     @output
     @render.ui
     async def linecountry():
-        data = await my_data.get_data_by_country(input.ddCountry())
-        fig = px.area(data, x = 'Year', y = 'Ladder score', color = "Country name", template=current_theme())
-        fig.update_layout(
-            margin=dict(t=40, b=0, l=0, r=0),
-            title= f"Area Graph Example {input.ddCountry()}",
-            xaxis_title='Date',
-            yaxis_title='Value'
-        )
-        return ui.tags.div(
-            ui.HTML(fig.to_html(full_html=False, include_plotlyjs=False)),
-            aria_label="Area graph based on Ladder score by year per country",
-            role="img"
-        )
+        selected_country = input.ddCountry()
+        data = await my_data.get_data_by_country(selected_country)
+        plot, descript = await myplots.build_linecountry(data, current_theme(), selected_country)
+        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
 app = App(app_ui, server, static_assets={"/static": assets_folder})
