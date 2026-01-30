@@ -77,3 +77,15 @@ class PlotBuilder():
             yaxis_title='Value'
         )
         return fig.to_html(full_html=False, include_plotlyjs=False), description
+
+    async def build_pietop3(self, data: pd.DataFrame, my_theme: str, year: int, top: int) -> tuple[str, str]:
+        description = f"Pie chart showing the distribution of the top {top} happiest countries in {year}"
+        fig = px.pie(
+            data,
+            names='Country name',
+            values='Ladder score',
+            title=f'Top {top} Happiest Countries Distribution in {year}',
+            template=my_theme
+        )
+        fig.update_layout(margin=self.margin)
+        return fig.to_html(full_html=False, include_plotlyjs=False), description

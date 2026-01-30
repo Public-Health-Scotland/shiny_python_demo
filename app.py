@@ -7,12 +7,6 @@ from view.myplots import PlotBuilder
 
 assets_folder = Path(__file__).parent / 'static'
 
-my_data = DataLoader()
-my_data.load_data()
-
-def my_dropdown_year(id):
-    return ui.input_select(id, "Select a Year:", my_data.dict_years)
-
 app_ui = ui.page_navbar(
     ui.nav_panel(
         # Name and icon
@@ -26,8 +20,15 @@ app_ui = ui.page_navbar(
         
         # First row: 2 cards side by side
         ui.layout_columns(
-            ui.card(ui.card_header("happiness data"),
-                    ui.output_data_frame("df_table"),
+            ui.card(ui.card_header("Top 3 happiness data distribution",
+                    ui.popover(
+                        ui.span(
+                            fa.icon_svg("ellipsis"),
+                            style="position:absolute; top: 5px; right: 7px;",),
+                        "Year",
+                        ui.input_selectize("ddpieyear", "Choose", choices=[] ))
+                    ),
+                    ui.output_ui("pietop3"),
                     full_screen=True
             ),
             ui.card(ui.card_header("Scatter plot"), 
@@ -44,7 +45,7 @@ app_ui = ui.page_navbar(
                             fa.icon_svg("ellipsis"),
                             style="position:absolute; top: 5px; right: 7px;",),
                         "Select a country",
-                        ui.input_selectize("ddCountry", "country", my_data.country_list ))),
+                        ui.input_selectize("ddCountry", "country", choices=[] ))),
                     ui.output_ui("linecountry"),
                     full_screen=True),
             col_widths=[12]
@@ -57,7 +58,7 @@ app_ui = ui.page_navbar(
         ui.layout_sidebar(
             ui.sidebar(
                 ui.h3("World Happiness top 10"),
-                my_dropdown_year("year")
+                ui.input_selectize("byear", "Choose", choices=[])
             ),
             ui.output_ui("top10_bar")
         )
@@ -69,7 +70,7 @@ app_ui = ui.page_navbar(
         ui.layout_sidebar(
             ui.sidebar(
                 ui.h3("Map plot"),
-                my_dropdown_year("mapyear")
+                ui.input_selectize("mapyear", "Choose", choices=[])
             ),
             ui.output_ui("happiness_map")
         )
@@ -81,7 +82,13 @@ app_ui = ui.page_navbar(
         ui.nav_panel(
             # Name and icon
             ui.TagList(fa.icon_svg("database"), "Database"),
-            ui.h2("Information from db")
+            ui.layout_columns(
+                ui.card(ui.card_header("happiness data"),
+                        ui.output_data_frame("df_table"),
+                        full_screen=True
+                ),
+                col_widths=[12]
+            )
         ),
         ui.nav_panel(
             # Name and icon
@@ -107,7 +114,8 @@ app_ui = ui.page_navbar(
     # Inject Plotly JS globally
     ui.head_content(
         ui.tags.link(rel="icon", href="static/logo.png", type="image/x-icon"),
-        ui.tags.script(src="https://cdn.plot.ly/plotly-3.3.1.min.js"),
+        # ui.tags.script(src="https://cdn.plot.ly/plotly-3.3.1.min.js"), # online version
+        ui.tags.script(src="static/plotly-3.3.1.min.js"), # offline version
         ui.tags.style("body { padding-top: 70px; }")
     ),
     title=ui.tags.a(
@@ -128,7 +136,32 @@ app_ui = ui.page_navbar(
 )
 
 def server(input, output, session):
+    my_data = DataLoader()
     myplots = PlotBuilder()
+
+    df_val = reactive.Value(None)
+
+    @output
+    @render.text
+    async def welcome():
+        # get current user
+        user_name = session.user
+        if user_name is None:
+            user_name = getpass.getuser()
+        return f"Welcome {user_name}"
+
+    # Load data ONCE at session start
+    @reactive.effect
+    async def _load_data():
+        df = await my_data.load_data()
+        df_val.set(df)
+        
+        # Now the country list is ready!
+        ui.update_selectize("byear", choices=my_data.dict_years)
+        ui.update_selectize("mapyear", choices=my_data.dict_years)
+        ui.update_selectize("ddpieyear", choices=my_data.dict_years)
+        ui.update_selectize("ddCountry", choices=my_data.country_list)
+
 
     @reactive.Calc
     def current_theme():
@@ -148,15 +181,6 @@ def server(input, output, session):
         if css_gridheader:
             style = ui.tags.style(css_gridheader, id='header_color')
             ui.insert_ui(style, selector='head')
-    
-    @output
-    @render.text
-    async def welcome():
-        # get current user
-        user_name = session.user
-        if user_name is None:
-            user_name = getpass.getuser()
-        return f"Welcome {user_name}"
     
     async def kpi_value_box(title: str, icon_name: str, message: str, current: float, historical: float):
         # get colour for your icon and current value
@@ -205,18 +229,28 @@ def server(input, output, session):
     @output
     @render.ui
     async def top10_bar():
-        year = int(input.year())
-        data = await my_data.get_top10_happiest_countries(year)
+        year = int(input.byear())
+        data = await my_data.get_top10_happiest_countries(year, 10)
         plot, descript = await myplots.build_top10_bar(data, current_theme(), year)
         return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
     @output
     @render.ui
     async def happiness_map():
-        year = int(input.mapyear())
-        data = await my_data.get_data_by_year(year)
-        plot, descript = await myplots.build_happiness_map(data, current_theme(), year)
-        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
+        if input.mapyear() != '':
+            year = int(input.mapyear())
+            data = await my_data.get_data_by_year(year)
+            plot, descript = await myplots.build_happiness_map(data, current_theme(), year)
+            return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
+
+    @output
+    @render.ui
+    async def pietop3():
+        if input.ddpieyear() != '':
+            year = int(input.ddpieyear())
+            data = await my_data.get_top10_happiest_countries(year=year, top=3)
+            plot, descript = await myplots.build_pietop3(data, current_theme(), year, 3)
+            return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
     @output
     @render.ui
@@ -228,9 +262,10 @@ def server(input, output, session):
     @output
     @render.ui
     async def linecountry():
-        selected_country = input.ddCountry()
-        data = await my_data.get_data_by_country(selected_country)
-        plot, descript = await myplots.build_linecountry(data, current_theme(), selected_country)
-        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
+        if input.ddCountry() != '':
+            selected_country = input.ddCountry()
+            data = await my_data.get_data_by_country(selected_country)
+            plot, descript = await myplots.build_linecountry(data, current_theme(), selected_country)
+            return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
 app = App(app_ui, server, static_assets={"/static": assets_folder})
