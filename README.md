@@ -36,8 +36,8 @@ You will need to run the following commands:
 ## Performance notes
 If you want a faster Plotly render, there are some adjustments to consider:
 - Set fig.to_html(full_html=False, include_plotlyjs=False), the full_html argument will avoid to create repeated html tags and include_plotlyjs won't load the plotly.js per chart.
-- We will need to globally load plotly.js. The element ui.head_content will contains ui.tags.script where we add src=https://cdn.plot.ly/plotly-3.1.0.min.js
-- This project runs with Plotly 6.3.0 which means it works with plotly-3.1.0.min.js
+- We will need to globally load plotly.js. The element ui.head_content will contains ui.tags.script where we add src=https://cdn.plot.ly/plotly-3.3.1.min.js or we can copy that file in static folder
+- This project runs with Plotly 6.5.2 which means it works with plotly-3.3.1.min.js
 
 ## Resources
 
