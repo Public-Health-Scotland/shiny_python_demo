@@ -47,3 +47,4 @@ If you want a faster Plotly render, there are some adjustments to consider:
 
 [Python package faicons](https://github.com/posit-dev/py-faicons)
 
+[Posit connect cloud example](https://019c6d8e-5068-bb52-18ee-505b14aa6a25.share.connect.posit.cloud/)
