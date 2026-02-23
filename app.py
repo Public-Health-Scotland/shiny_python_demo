@@ -5,7 +5,7 @@ from pathlib import Path
 from data.data_con import DataLoader
 from view.myplots import PlotBuilder
 
-assets_folder = Path(__file__).parent / 'static'
+assets_folder = Path(__file__).parent / 'www'
 
 app_ui = ui.page_navbar(
     ui.nav_panel(
@@ -105,33 +105,29 @@ app_ui = ui.page_navbar(
     ui.nav_control(
         ui.div(
             fa.icon_svg("person-circle-check"),
-            ui.span(ui.output_text("welcome"), style="margin-left: 6px;"),
-            style="display: flex; align-items: center; padding-right: 15px;"
+            ui.span(ui.output_text("welcome"), id="welcome_text"),
+            id="welcome_div"
         )
     ),
     # ui.nav_control(ui.output_text("welcome")), 
     ui.nav_control(ui.input_dark_mode(id="dark_mode_switch")),
     # Inject Plotly JS globally
     ui.head_content(
-        ui.tags.link(rel="icon", href="static/logo.png", type="image/x-icon"),
+        ui.tags.link(rel="icon", href="www/phs-logo.svg", type="image/x-icon"),
         # ui.tags.script(src="https://cdn.plot.ly/plotly-3.3.1.min.js"), # online version
-        ui.tags.script(src="static/plotly-3.3.1.min.js"), # offline version
-        ui.tags.style("body { padding-top: 70px; }")
+        ui.tags.script(src="www/plotly-3.3.1.min.js"),
+        ui.tags.script(src="www/functs.js"),
+        ui.tags.link(rel="stylesheet", href="www/phs.css")
     ),
     title=ui.tags.a(
-        ui.tags.img(src="static/logo.png", alt="PHS logo", height="45px"), "",
+        ui.tags.img(id="app-logo", alt="PHS logo"), "",
         href="https://www.publichealthscotland.scot/",
         target="_blank",
         class_="navbar-brand d-flex align-items-center"
     ),
     lang="en",
     navbar_options=ui.navbar_options(position="fixed-top"),
-    footer=ui.tags.footer(
-        ui.tags.span("© Developed by Data science team - "),
-        ui.tags.script("document.write(new Date().getFullYear());"),
-        class_="text-center p-2",
-        role="contentinfo"
-    ),
+    footer=ui.tags.footer(id="app-footer"),
     window_title="World happyness"
 )
 
@@ -185,23 +181,21 @@ def server(input, output, session):
     async def kpi_value_box(title: str, icon_name: str, message: str, current: float, historical: float):
         # get colour for your icon and current value
         my_kpi_color = "#9B4393"
-        # build your icon with the color
-        icon = fa.icon_svg(icon_name, width="50px", fill=f"{my_kpi_color} !important")
-        
-        value_block = ui.div(
-            *filter(None, [ui.strong(f"{historical}") if historical is not None else None]),
-            ui.span(
-                f"/ {current}",
-                style=f"margin-left:8px;color:{my_kpi_color};font-weight:600;"
+        return ui.value_box(
+            title=title,
+            value = ui.div(
+                ui.div(
+                    *filter(None, [ui.strong(f"{historical}") if historical is not None else None]),
+                    ui.span(
+                        f"/{current}", class_ = "span_current",
+                        style=f"color:{my_kpi_color};"
+                    ),
+                    # ui.span(f"{mydata.last_date}", class_ = "span_week")
+                ),
+                ui.div("(Historical / Current)", class_ = "div_hist_curr")
             ),
-            ui.br(),
-            ui.span(
-                f"{message}",
-                style="font-size:0.40em;font-weight:100;"
-            )
+            showcase=fa.icon_svg(icon_name, fill=f"{my_kpi_color} !important")
         )
-
-        return ui.value_box(title=title, value=value_block, showcase=icon)
 
     @output
     @render.ui
@@ -268,4 +262,4 @@ def server(input, output, session):
             plot, descript = await myplots.build_linecountry(data, current_theme(), selected_country)
             return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
-app = App(app_ui, server, static_assets={"/static": assets_folder})
+app = App(app_ui, server, static_assets={"/www": assets_folder})

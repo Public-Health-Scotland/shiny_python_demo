@@ -1,0 +1,51 @@
+/* give a padding top to the body object */
+body { padding-top: 85px; }
+
+/* Modify the welcome user message */
+#welcome_text {
+    margin-left: 6px;
+    font-style: italic;
+}
+
+/* Modify the welcome message div */
+#welcome_div {
+    display: flex; align-items: center; padding-right: 15px;
+}
+
+/* Modify the value_box */
+.value-box .value-box-showcase i {
+    font-size: clamp(30px, 4vw, 50px);
+}
+
+.div_hist_curr {
+    font-size:0.30em;font-weight:100;display: block;padding-top: 10px;
+}
+
+.span_week {
+    margin-left:9px;font-size:0.40em;display:block:
+}
+
+.span_current {
+    margin-left:3px; font-weight:700;display:block:
+}
+
+/* Modify the footer */
+#app-footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9rem;
+}
+
+/* Dark mode logo override */
+html[data-bs-theme='dark'] #app-logo {
+    content: url('phs-logo-white.svg');
+    width: 200px;
+    height: auto;
+}
+
+/* light mode logo override */
+html[data-bs-theme='light'] #app-logo {
+    content: url('phs-logo.svg');
+    width: 200px;
+    height: auto;
+}
