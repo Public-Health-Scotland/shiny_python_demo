@@ -4,6 +4,7 @@ import getpass
 from pathlib import Path
 from data.data_con import DataLoader
 from view.myplots import PlotBuilder
+from helper.functs import read_my_json
 
 assets_folder = Path(__file__).parent / 'www'
 
@@ -132,17 +133,28 @@ app_ui = ui.page_navbar(
         ui.div(
             ui.span("Left content 1", class_="left"),
             ui.span("Right content 1", class_="right"),
-            class_="footer-row",
+            class_="phs-footer-row phs-footer-row1",
         ),
         ui.div(
-            ui.span("Left content 2", class_="left"),
-            ui.span("Right content 2", class_="right"),
-            class_="footer-row",
+            ui.span(
+                ui.tags.a(
+                    "publichealthscotland.scot",
+                    href="https://www.publichealthscotland.scot/",
+                    target="_blank",
+                    rel = "noopener noreferrer",
+                    class_="phs-footer-phs-link"
+                ), class_="left"),
+            ui.span(
+                *[
+                    ui.tags.a(fa.icon_svg(item["name"]), href=item["link"], target="_blank", class_ = "phs-footer-social-icon")
+                    for item in read_my_json("www/content/socialmedia.json")
+                ], class_="phs-footer-row2-right"),
+            class_="phs-footer-row phs-footer-row2",
         ),
         ui.div(
             ui.span("Left content 3", class_="left"),
             ui.span(id="app-footer", class_="phs-footer-copyright"),
-            class_="footer-row",
+            class_="phs-footer-row phs-footer-row3",
         ),
         class_="phs-footer",
         role="contentinfo"
@@ -204,7 +216,7 @@ def server(input, output, session):
             title=title,
             value = ui.div(
                 ui.div(
-                    *filter(None, [ui.strong(f"{historical}") if historical is not None else None]),
+                    *filter(None, [ui.span(f"{historical}") if historical is not None else None]),
                     ui.span(
                         f"/{current}", class_ = "span_current",
                         style=f"color:{my_kpi_color};"

@@ -25,12 +25,167 @@
   }
 }
 
-.phs-footer-row3-right {
+/* Row 1: App name/version + Compliance links */
+.phs-footer-row1 .phs-footer-row1-left {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* map-get($phs-spacing-scale, 3) */
+  flex-wrap: wrap;
+}
+
+/* Row 2: PHS website link + Social media icons */
+.phs-footer-row1 .phs-footer-app-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--phs-color-fg);
+}
+
+.phs-footer-row1 .phs-footer-version-badge {
+  display: inline-block;
+  padding: 4px 12px; /* map-get($phs-spacing-scale, 1) map-get($phs-spacing-scale, 3) */
+  background-color: var(--phs-color-primary);
+  color: white;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.phs-footer-row1 .phs-footer-version-badge:hover {
+  background-color: var(--phs-color-primary-dark);
+  text-decoration: none;
+  color: white;
+}
+
+.phs-footer-row1 .phs-footer-row1-right {
+  display: flex;
+  align-items: center;
+  gap: 24px; /* map-get($phs-spacing-scale, 6) */
+  flex-wrap: wrap;
+}
+
+/* media-breakpoint-down(md) — you’ll need to replace this with your actual breakpoint */
+@media (max-width: 768px) {
+  .phs-footer-row1 .phs-footer-row1-right {
+    justify-content: center;
+    gap: 16px; /* map-get($phs-spacing-scale, 4) */
+  }
+}
+
+.phs-footer-row1 .phs-footer-compliance-link {
+  color: var(--phs-color-fg);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.phs-footer-row1 .phs-footer-compliance-link:hover {
+  color: var(--phs-color-link);
+  text-decoration: underline;
+}
+
+.phs-footer-row2 {
+  border-bottom: 1px solid var(--phs-color-border);
+  padding-bottom: 24px; /* map-get($phs-spacing-scale, 6) */
+}
+
+.phs-footer-row2 .phs-footer-row2-left {
   display: flex;
   align-items: center;
 }
 
-.phs-footer-row3-right .phs-footer-copyright {
+.phs-footer-row2 .phs-footer-row2-left .phs-footer-phs-link {
+  color: var(--phs-color-link);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.phs-footer-row2 .phs-footer-row2-left .phs-footer-phs-link:hover {
+  outline-offset: 2px;
+}
+
+.phs-footer-row2 .phs-footer-row2-right {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px; /* map-get($phs-spacing-scale, 6) */
+}
+
+.phs-footer-row2 .phs-footer-row2-right .phs-footer-social-icon {
+  color: var(--phs-color-primary);
+  font-size: 1.5rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phs-footer-row2 .phs-footer-row2-right .phs-footer-social-icon:hover {
+  color: var(--phs-color-primary-dark);
+  transform: scale(1.1);
+}
+
+.phs-footer-row2 .phs-footer-row2-right .phs-footer-social-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Row 3: OGL logo/license + Copyright */
+.phs-footer-row3 {
+  margin: 24px 0; /* map-get($phs-spacing-scale, 6) */
+  padding-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+
+.phs-footer-row3 .phs-footer-row3-left {
+  max-width: 55%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 17px;
+  flex-direction: column;
+  gap: 16px; /* map-get($phs-spacing-scale, 2) */
+}
+
+/* media-breakpoint-up(md) — replace with your actual breakpoint */
+@media (min-width: 768px) {
+  .phs-footer-row3 .phs-footer-row3-left {
+    justify-content: flex-start;
+    text-align: left;
+    flex-direction: row;
+  }
+}
+
+.phs-footer-row3 .phs-footer-row3-left .ogl-logo {
+  width: 67px;
+  height: auto;
+}
+
+.phs-footer-row3 .phs-footer-row3-left .phs-footer-ogl-text {
+  color: var(--phs-color-text-muted);
+  line-height: 17px;
+}
+
+.phs-footer-row3 .phs-footer-row3-left .phs-footer-ogl-link {
+  color: var(--phs-color-link);
+  text-decoration: none;
+}
+
+.phs-footer-row3 .phs-footer-row3-left .phs-footer-ogl-link:hover {
+  color: var(--phs-color-link-hover);
+  text-decoration: underline;
+}
+
+.phs-footer-row3 .phs-footer-row3-right {
+  display: flex;
+  align-items: center;
+}
+
+.phs-footer-row3 .phs-footer-row3-right .phs-footer-copyright {
   color: var(--phs-color-text-muted);
   white-space: nowrap;
 }
