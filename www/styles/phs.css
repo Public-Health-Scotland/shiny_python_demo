@@ -22,30 +22,30 @@ body { padding-top: 85px; }
 }
 
 .span_week {
-    margin-left:9px;font-size:0.40em;display:block:
+    margin-left:9px;font-size:0.40em;display:block;
 }
 
 .span_current {
-    margin-left:3px; font-weight:700;display:block:
+    margin-left:3px; font-weight:700;display:block;
 }
 
 /* Modify the footer */
-#app-footer {
+/* #app-footer {
     text-align: center;
     padding: 20px;
     font-size: 0.9rem;
-}
+} */
 
 /* Dark mode logo override */
 html[data-bs-theme='dark'] #app-logo {
-    content: url('phs-logo-white.svg');
+    content: url('../img/phs-logo-white.svg');
     width: 200px;
     height: auto;
 }
 
 /* light mode logo override */
 html[data-bs-theme='light'] #app-logo {
-    content: url('phs-logo.svg');
+    content: url('../img/phs-logo.svg');
     width: 200px;
     height: auto;
 }

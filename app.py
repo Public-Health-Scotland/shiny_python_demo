@@ -75,10 +75,19 @@ app_ui = ui.page_navbar(
             ui.output_ui("happiness_map")
         )
     ),
+    ui.nav_spacer(),
     ui.nav_menu(
         # Name and icon
-        ui.TagList(fa.icon_svg("plus"), "More data"),
-
+        ui.TagList(fa.icon_svg("arrow-up-right-dots"), "More"),
+        ui.nav_control(
+            ui.div(
+                fa.icon_svg("person-circle-check"),
+                ui.span(ui.output_text("welcome"), id="welcome_text"),
+                id="welcome_div"
+            )
+        ),
+        # ui.nav_control(ui.output_text("welcome")), 
+        ui.nav_control(ui.input_dark_mode(id="dark_mode_switch")),
         ui.nav_panel(
             # Name and icon
             ui.TagList(fa.icon_svg("database"), "Database"),
@@ -101,23 +110,14 @@ app_ui = ui.page_navbar(
             ui.h2("Help Page")
         )
     ),
-    ui.nav_spacer(),
-    ui.nav_control(
-        ui.div(
-            fa.icon_svg("person-circle-check"),
-            ui.span(ui.output_text("welcome"), id="welcome_text"),
-            id="welcome_div"
-        )
-    ),
-    # ui.nav_control(ui.output_text("welcome")), 
-    ui.nav_control(ui.input_dark_mode(id="dark_mode_switch")),
     # Inject Plotly JS globally
     ui.head_content(
-        ui.tags.link(rel="icon", href="www/phs-logo.svg", type="image/x-icon"),
+        ui.tags.link(rel="icon", href="www/img/phs-logo.svg", type="image/x-icon"),
         # ui.tags.script(src="https://cdn.plot.ly/plotly-3.3.1.min.js"), # online version
-        ui.tags.script(src="www/plotly-3.3.1.min.js"),
-        ui.tags.script(src="www/functs.js"),
-        ui.tags.link(rel="stylesheet", href="www/phs.css")
+        ui.tags.script(src="www/javascript/plotly-3.3.1.min.js"),
+        ui.tags.script(src="www/javascript/functs.js"),
+        ui.tags.link(rel="stylesheet", href="www/styles/phs.css"),
+        ui.tags.link(rel="stylesheet", href="www/styles/_footer.css")
     ),
     title=ui.tags.a(
         ui.tags.img(id="app-logo", alt="PHS logo"), "",
@@ -127,7 +127,26 @@ app_ui = ui.page_navbar(
     ),
     lang="en",
     navbar_options=ui.navbar_options(position="fixed-top"),
-    footer=ui.tags.footer(id="app-footer"),
+    # footer=ui.tags.footer(id="app-footer"),
+    footer=ui.tags.footer(
+        ui.div(
+            ui.span("Left content 1", class_="left"),
+            ui.span("Right content 1", class_="right"),
+            class_="footer-row",
+        ),
+        ui.div(
+            ui.span("Left content 2", class_="left"),
+            ui.span("Right content 2", class_="right"),
+            class_="footer-row",
+        ),
+        ui.div(
+            ui.span("Left content 3", class_="left"),
+            ui.span(id="app-footer", class_="phs-footer-copyright"),
+            class_="footer-row",
+        ),
+        class_="phs-footer",
+        role="contentinfo"
+    ),
     window_title="World happyness"
 )
 

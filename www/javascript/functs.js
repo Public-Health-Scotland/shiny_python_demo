@@ -3,6 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const footerEl = document.getElementById("app-footer");
 
   if (footerEl) {
-    footerEl.textContent = `© Developed by Data science team - ${year}`;
+    footerEl.textContent = `© ${year} Public Health Scotland`;
   }
 });

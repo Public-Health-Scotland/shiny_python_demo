@@ -1,0 +1,36 @@
+.phs-footer {
+  background-color: var(--phs-color-footer-bg);
+  border-top: 1px solid var(--phs-color-border);
+  padding: 32px; /* map-get($phs-spacing-scale, 8) */
+  margin-top: auto;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.phs-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px; /* map-get($phs-spacing-scale, 6) */
+  padding: 16px 0; /* map-get($phs-spacing-scale, 4) */
+}
+
+@media (max-width: 768px) {
+  .phs-footer-row {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px; /* map-get($phs-spacing-scale, 4) */
+    padding: 12px 0; /* map-get($phs-spacing-scale, 3) */
+  }
+}
+
+.phs-footer-row3-right {
+  display: flex;
+  align-items: center;
+}
+
+.phs-footer-row3-right .phs-footer-copyright {
+  color: var(--phs-color-text-muted);
+  white-space: nowrap;
+}

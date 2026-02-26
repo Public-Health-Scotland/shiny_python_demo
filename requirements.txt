@@ -1,4 +1,4 @@
-shiny==1.5.1
+shiny[theme]==1.5.1
 plotly==6.5.2
 pandas==2.3.3
 statsmodels==0.14.6
