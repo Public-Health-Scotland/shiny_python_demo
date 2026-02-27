@@ -49,3 +49,17 @@ html[data-bs-theme='light'] #app-logo {
     width: 200px;
     height: auto;
 }
+
+/* Dark mode logo override */
+html[data-bs-theme='dark'] #ogl-logo {
+    content: url('../img/ogl-logo-white.svg');
+    width: 67px;
+    height: 120px;
+}
+
+/* light mode logo override */
+html[data-bs-theme='light'] #ogl-logo {
+    content: url('../img/ogl-logo.svg');
+    width: 67px;
+    height: 120px;
+}

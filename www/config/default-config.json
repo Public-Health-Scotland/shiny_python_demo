@@ -1,0 +1,47 @@
+{
+  "compliance": {
+    "accessibility_statement": {
+      "name_en": "Accessibility",
+      "enabled": true,
+      "contact_email": "phs.otherformats@phs.scot",
+      "compliance_status": "TBC"
+    },
+    "privacy_notice": {
+      "name_en": "Privacy",
+      "enabled": true
+    },
+    "cookies": {
+      "name_en": "Cookies",
+      "enabled": true
+    },
+    "terms_and_conditions": {
+      "name_en": "Terms and Conditions",
+      "enabled": true
+    },
+    "contact": {
+      "name_en": "Contact",
+      "enabled": true
+    },
+    "about_app": {
+      "enabled": true
+    },
+    "about_data": {
+      "enabled": true
+    }
+  },
+  "footer": {
+    "show_app_version": true,
+    "publichealthscotland_url": "https://publichealthscotland.scot",
+    "ogl_license_url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+    "social_media": {
+      "enabled": true,
+      "links": {
+        "linkedin": "https://www.linkedin.com/company/public-health-scotland",
+        "facebook": "https://www.facebook.com/publichealthscotland",
+        "instagram": "https://www.instagram.com/publichealthscotland",
+        "youtube": "https://www.youtube.com/@publichealthscotland",
+        "github": "https://github.com/Public-Health-Scotland"
+      }
+    }
+  }
+}

@@ -7,6 +7,11 @@
   font-size: 1rem;
 }
 
+.phs-footer-inner {
+  max-width: $phs-max-width;
+  margin: 0 auto;
+}
+
 .phs-footer-row {
   display: flex;
   justify-content: space-between;

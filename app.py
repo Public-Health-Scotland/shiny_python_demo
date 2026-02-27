@@ -4,9 +4,10 @@ import getpass
 from pathlib import Path
 from data.data_con import DataLoader
 from view.myplots import PlotBuilder
-from helper.functs import read_my_json
+from helper.functs import phs_config_get, get_social_urls, get_phs_url, get_ogl_url, get_compliance_list
 
 assets_folder = Path(__file__).parent / 'www'
+cfg = phs_config_get(assets_folder / "config" / "default-config.json")
 
 app_ui = ui.page_navbar(
     ui.nav_panel(
@@ -122,39 +123,58 @@ app_ui = ui.page_navbar(
     ),
     title=ui.tags.a(
         ui.tags.img(id="app-logo", alt="PHS logo"), "",
-        href="https://www.publichealthscotland.scot/",
-        target="_blank",
-        class_="navbar-brand d-flex align-items-center"
+        href = get_phs_url(cfg),
+        target = "_blank",
+        class_ = "navbar-brand d-flex align-items-center"
     ),
     lang="en",
     navbar_options=ui.navbar_options(position="fixed-top"),
-    # footer=ui.tags.footer(id="app-footer"),
     footer=ui.tags.footer(
         ui.div(
-            ui.span("Left content 1", class_="left"),
-            ui.span("Right content 1", class_="right"),
-            class_="phs-footer-row phs-footer-row1",
-        ),
-        ui.div(
-            ui.span(
-                ui.tags.a(
-                    "publichealthscotland.scot",
-                    href="https://www.publichealthscotland.scot/",
-                    target="_blank",
-                    rel = "noopener noreferrer",
-                    class_="phs-footer-phs-link"
-                ), class_="left"),
-            ui.span(
-                *[
-                    ui.tags.a(fa.icon_svg(item["name"]), href=item["link"], target="_blank", class_ = "phs-footer-social-icon")
-                    for item in read_my_json("www/content/socialmedia.json")
-                ], class_="phs-footer-row2-right"),
-            class_="phs-footer-row phs-footer-row2",
-        ),
-        ui.div(
-            ui.span("Left content 3", class_="left"),
-            ui.span(id="app-footer", class_="phs-footer-copyright"),
-            class_="phs-footer-row phs-footer-row3",
+            ui.div(
+                ui.div("Left content 1", class_ = "phs-footer-row1-left"),
+                ui.div(
+                    *[
+                        ui.tags.a(section.get('name_en'), href="#")
+                        for name, section in get_compliance_list(cfg).items() if section.get('enabled') is True and section.get('name_en') is not None
+                    ], class_="phs-footer-row1-right"),
+                class_="phs-footer-row phs-footer-row1",
+            ),
+            ui.div(
+                ui.span(
+                    ui.tags.a(
+                        "publichealthscotland.scot",
+                        href = get_phs_url(cfg),
+                        target = "_blank",
+                        rel = "noopener noreferrer",
+                        class_="phs-footer-phs-link"
+                    ), class_="left"),
+                ui.span(
+                    *[
+                        ui.tags.a(fa.icon_svg(name), href=url, target="_blank", class_ = "phs-footer-social-icon")
+                        for name, url in get_social_urls(cfg).items()
+                    ], class_="phs-footer-row2-right"),
+                class_="phs-footer-row phs-footer-row2",
+            ),
+            ui.div(
+                ui.div(
+                    ui.tags.img(id="ogl-logo", alt="Open Government Licence logo"),
+                    ui.span("All content is available under the ", 
+                            ui.tags.a("Open Government Licence",
+                                        href = get_ogl_url(cfg),
+                                        target = "_blank",
+                                        rel = "noopener noreferrer",
+                                        class_ = "phs-footer-ogl-link"),
+                            ", except where otherwise stated",
+                            class_="phs-footer-ogl-text"),
+                    class_ = "phs-footer-row3-left"
+                ),
+                ui.div(
+                    ui.span(id="app-footer", class_="phs-footer-copyright"),
+                    class_ = "phs-footer-row3-right",
+                ),
+                class_="phs-footer-row phs-footer-row3",
+            ), class_ = "phs-footer-inner"
         ),
         class_="phs-footer",
         role="contentinfo"
