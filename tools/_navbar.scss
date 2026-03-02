@@ -1,0 +1,311 @@
+$navbar-height: 160px;
+$navbar-height-scrolled: 105px;
+$navbar-height-mobile: 145px;
+$navbar-height-mobile-scrolled: 90px;
+
+$phs-max-width: 1290px;
+
+$phs-spacing-base: 4px;
+$phs-spacing-scale: (
+  1: $phs-spacing-base * 1,   //  4px
+  2: $phs-spacing-base * 2,   //  8px
+  3: $phs-spacing-base * 3,   // 12px
+  4: $phs-spacing-base * 4,   // 16px
+  6: $phs-spacing-base * 6,   // 24px
+  8: $phs-spacing-base * 8,   // 32px
+  10: $phs-spacing-base * 10, // 40px
+  12: $phs-spacing-base * 12, // 48px
+  16: $phs-spacing-base * 16, // 64px
+);
+// Navbar — Fixed header with scroll-responsive height
+// Includes desktop/mobile layouts, dropdowns, and theme mode selector
+
+// Body padding to account for fixed navbar
+body {
+  padding-top: $navbar-height;
+  transition: padding-top 0.3s ease-in-out;
+
+  @media (max-width: 768px)  {
+    padding-top: $navbar-height-mobile;
+  }
+
+  // Adjust body padding when navbar is shrunk
+  &.shrunk {
+    padding-top: $navbar-height-scrolled;
+
+    @media (max-width: 768px)  {
+      padding-top: $navbar-height-mobile-scrolled;
+    }
+  }
+}
+
+.tab-content.shrunk {
+  padding-bottom: $navbar-height - $navbar-height-scrolled;
+  transition: padding-bottom 0.3s ease-in-out;
+
+  @media (max-width: 768px)  {
+    padding-bottom: $navbar-height-mobile - $navbar-height-mobile-scrolled;
+  }
+}
+
+// Fixed navbar with full width
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: $navbar-height;
+  transition: height 0.3s ease-in-out;
+  z-index: 1030; // Bootstrap default, explicitly set to ensure it's above header (1000)
+
+  // Override bslib CSS custom properties with PHS navbar colors
+  background-color: var(--phs-color-navbar-bg) !important;
+  border-bottom: 1px solid var(--phs-color-navbar-border);
+
+  // Container inside navbar - constrain max width and use flexbox for alignment
+  .navbar > .container-fluid {
+    max-width: $phs-max-width; // 1200px
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    padding-left: map-get($phs-spacing-scale, 8); // 32px
+    padding-right: map-get($phs-spacing-scale, 8); // 32px
+    display: flex;
+    align-items: center;
+    justify-content: space-between; // Brand on left, nav items on right
+  }
+
+  // Navbar brand - ensure flexbox layout
+  .navbar-brand {
+    display: flex;
+  }
+
+  // Navbar brand (logo)
+  .phs-navbar-brand {
+    display: flex;
+    align-items: center;
+  }
+
+  .phs-navbar-logo-wrapper {
+    display: flex;
+    align-items: center;
+  }
+
+  .phs-navbar-logo {
+    width: 200px;
+    height: auto;
+    margin: map-get($phs-spacing-scale, 8); // 32px
+    transition: all 0.3s ease-in-out;
+  }
+  
+  // Shrunk navbar height
+  &.shrunk {
+    height: $navbar-height-scrolled;
+
+    .phs-navbar-logo {
+      width: 130px;
+      margin: map-get($phs-spacing-scale, 4); // 16px
+    }
+  }
+
+  @media (max-width: 768px)  {
+    height: $navbar-height-mobile;
+    overflow: visible; // Allow collapse to extend beyond navbar
+
+    .phs-navbar-logo {
+      width: 180px;
+      margin: 25px;
+    }
+
+    &.shrunk {
+      height: $navbar-height-mobile-scrolled;
+
+      .phs-navbar-logo {
+        width: 130px;
+        margin: map-get($phs-spacing-scale, 4); // 16px
+      }
+    }
+  }
+}
+
+// Navbar nav items - BASE styles (desktop)
+.navbar-nav .nav-link {
+  padding: 0.75rem 1rem; // Standard padding for desktop
+  font-weight: 500;
+  font-size: 1rem; // Consistent font size
+  color: var(--phs-color-fg);
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--phs-color-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--phs-color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+// Active nav item - DESKTOP style (underline indicator)
+.navbar-nav .nav-link.active {
+  color: var(--phs-color-primary);
+  border-bottom: 3px solid var(--phs-color-primary);
+  font-weight: 600;
+}
+
+// Collapsible/mobile navbar styles
+@media (max-width: 768px)  {
+
+  // Backdrop overlay when navbar is expanded
+  // (positioned below navbar, updated dynamically by JavaScript)
+  .navbar.has-open-collapse::before {
+    content: '';
+    position: fixed;
+    top: var(--phs-navbar-height, 60px); // Default 60px, set by JavaScript
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--phs-color-overlay);
+    z-index: 1035; // Between navbar (1030) and collapse (1040)
+    pointer-events: auto;
+  }
+
+  // Position collapsed nav below navbar at full width
+  .navbar-collapse {
+    position: fixed !important; // Fixed positioning to overlay content reliably
+    // top and max-height are set dynamically by JavaScript
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    background-color: var(--phs-color-bg); // Match navbar background
+    border-top: 1px solid var(--phs-color-border);
+    border-bottom: 1px solid var(--phs-color-border);
+    box-shadow: 0 12px 4px rgba(0, 0, 0, 0.15); // Shadow for visual separation
+    z-index: 1040 !important; // Above navbar (1030) and backdrop (1035)
+    text-align: center;
+    overflow-y: auto !important; // Allow internal scrolling if content is too tall
+    -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+
+    // Smooth expand/collapse animation
+    &.collapsing {
+      transition: height 0.35s ease;
+      position: fixed !important; // Maintain fixed position during animation
+    }
+
+    &.show {
+      display: block !important;
+    }
+
+    // Override Bootstrap's default display:none when collapsed
+    &:not(.show) {
+      display: none !important;
+    }
+  }
+
+  .navbar-nav {
+    align-items: center;
+    padding: map-get($phs-spacing-scale, 2) 0; // 8px vertical (reduced for cleaner look)
+    width: 100%; // Full width
+  }
+
+  .navbar-nav .nav-item {
+    width: 100%;
+
+  }
+
+  // MOBILE collapsed nav - match dropdown styling
+  .navbar-nav .nav-link {
+    padding: 0.75rem 1.5rem; // Match dropdown padding
+    display: block;
+    font-size: 1rem; // Consistent font size
+    text-align: center;
+    border-bottom: none; // Remove underline for mobile
+
+    // Hover state - background color like dropdown
+    &:hover {
+      background-color: var(--phs-color-surface-variant);
+      color: var(--phs-color-primary);
+    }
+  }
+
+  // Active indicator in mobile - background color (match dropdown)
+  .navbar-nav .nav-link.active {
+    background-color: var(--phs-color-primary);
+    color: var(--phs-color-status-primary-fg);
+    border-bottom: none; // No underline in mobile
+    border-left: none; // No borders
+    font-weight: 600;
+  }
+
+  .navbar .nav-underline .nav-link, .navbar .nav-underline :where(ul.nav.navbar-nav > li)>a {
+    margin-bottom: 0;
+  }
+}
+
+// Dropdown menu styling
+.dropdown-menu {
+  border: 1px solid var(--phs-color-border);
+  border-radius: 4px;
+  z-index: 1050; // Ensure dropdowns show above everything else
+  padding: 1rem;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem; // Consistent font size
+  color: var(--phs-color-fg);
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--phs-color-surface-variant);
+    color: var(--phs-color-primary);
+  }
+
+  &.active {
+    background-color: var(--phs-color-primary);
+    color: var(--phs-color-status-primary-fg);
+  }
+}
+
+// Dropdown divider (nav_menu_sep)
+.dropdown-divider {
+  border-top: 1px solid var(--phs-color-border);
+  margin: 0.5rem 0;
+}
+
+// Center dropdowns in mobile collapsed navbar
+// ONLY apply when navbar is actually collapsed (mobile menu is open)
+@media (max-width: 768px)  {
+  .navbar-collapse.show .dropdown-menu {
+    position: static !important;
+    transform: none !important;
+    float: none;
+    text-align: center;
+    margin: 0 auto;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .navbar-collapse.show .dropdown-item {
+    text-align: center;
+    padding: 0.75rem 1.5rem; // Match standard nav link and dropdown padding
+    font-size: 1rem; // Ensure consistent font size
+  }
+}
+
+.phs-theme-mode-label {
+  text-align: center;
+  padding: 0.5rem 1.5rem 0.25rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--phs-color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.phs-theme-mode-selector {
+  display: flex;
+  justify-content: center;
+}

@@ -3,13 +3,14 @@ body { padding-top: 85px; }
 
 /* Modify the welcome user message */
 #welcome_text {
-    margin-left: 6px;
+    /* margin-left: 6px; */
     font-style: italic;
 }
 
 /* Modify the welcome message div */
 #welcome_div {
-    display: flex; align-items: center; padding-right: 15px;
+    display: flex; align-items: left; 
+    /* padding-right: 15px; */
 }
 
 /* Modify the value_box */

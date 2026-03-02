@@ -1,0 +1,57 @@
+/* For nav_menu on the right: open the dropdown to the left of the toggle */
+/* .navbar .nav-item.dropdown .dropdown-menu {
+  
+} */
+/* Navbar nav items – BASE styles (desktop) */
+.navbar-nav .nav-link {
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--phs-color-fg);
+  transition: all 0.2s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--phs-color-primary);
+}
+
+.navbar-nav .nav-link:focus-visible {
+  outline: 2px solid var(--phs-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.navbar .dropdown-menu {
+  border: 1px solid var(--phs-color-border);
+  border-radius: 4px;
+  z-index: 1050;
+  padding: 2rem;
+  min-width: 15rem;
+  right: 0 !important;
+  left: auto !important;
+  transform: translateX(-1%);
+}
+
+.navbar .dropdown-menu > li {
+  min-height: 3rem !important;
+}
+
+.navbar .dropdown-menu > li > * {
+  padding-left: 1rem;      /* your desired left padding */
+}
+
+.dropdown-item {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem; /* Consistent font size */
+  color: var(--phs-color-fg);
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: var(--phs-color-surface-variant);
+  color: var(--phs-color-primary);
+}
+
+.dropdown-item.active {
+  background-color: var(--phs-color-primary);
+  color: var(--phs-color-status-primary-fg);
+}

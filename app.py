@@ -80,7 +80,7 @@ app_ui = ui.page_navbar(
     ui.nav_spacer(),
     ui.nav_menu(
         # Name and icon
-        ui.TagList(fa.icon_svg("arrow-up-right-dots"), "More"),
+        ui.TagList(fa.icon_svg("ellipsis"), "More"),
         ui.nav_control(
             ui.div(
                 fa.icon_svg("person-circle-check"),
@@ -121,9 +121,11 @@ app_ui = ui.page_navbar(
         # ui.tags.script(src="https://cdn.plot.ly/plotly-3.3.1.min.js"), # online version
         ui.tags.script(src="www/javascript/plotly-3.3.1.min.js"),
         ui.tags.script(src="www/javascript/functs.js"),
-        ui.tags.script(src="www/javascript/phs-thene-mode.js"),
+        # ui.tags.script(src="www/javascript/phs-thene-mode.js"),
+        # ui.tags.script(src="www/javascript/phs-navbar.js"),
         ui.tags.link(rel="stylesheet", href="www/styles/phs.css"),
-        ui.tags.link(rel="stylesheet", href="www/styles/_footer.css")
+        ui.tags.link(rel="stylesheet", href="www/styles/_footer.css"),
+        ui.tags.link(rel="stylesheet", href="www/styles/_navbar.css")
     ),
     title=ui.tags.a(
         ui.tags.img(id="app-logo", alt="PHS logo"), "",
