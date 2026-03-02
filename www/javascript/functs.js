@@ -6,3 +6,5 @@ document.addEventListener("DOMContentLoaded", () => {
     footerEl.textContent = `© ${year} Public Health Scotland`;
   }
 });
+
+
