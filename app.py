@@ -83,7 +83,7 @@ app_ui = ui.page_navbar(
         ui.TagList(fa.icon_svg("ellipsis"), "More"),
         ui.nav_control(
             ui.div(
-                ui.span("User"),
+                ui.span("User:"),
                 ui.div(
                     fa.icon_svg("person-circle-check"),
                     ui.output_text("welcome", inline=True)
@@ -91,7 +91,7 @@ app_ui = ui.page_navbar(
             )
         ),
         # Separator: In Python Shiny, we use nav_control to wrap non-nav elements
-        ui.nav_control(ui.tags.hr()),
+        # ui.nav_control(ui.tags.hr()),
         ui.nav_control(
             ui.div(
                 ui.span("theme:"),
@@ -102,7 +102,7 @@ app_ui = ui.page_navbar(
             )
         ),
         # Separator: In Python Shiny, we use nav_control to wrap non-nav elements
-        ui.nav_control(ui.tags.hr()),
+        # ui.nav_control(ui.tags.hr()),
         ui.nav_panel(
             # Name and icon
             ui.TagList(fa.icon_svg("database"), "Database"),

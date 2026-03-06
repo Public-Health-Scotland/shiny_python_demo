@@ -13,35 +13,24 @@
 
 /* 2. Reset List Items */
 .navbar .dropdown-menu > li {
-    padding: 0.8rem 1.25rem !important; /* Increases vertical thickness */
+    padding: 1rem 1rem !important; /* Increases vertical thickness */
     min-height: auto !important; /* REMOVED the 3rem trap */
     align-items: center;
 }
 
 /* 3. Targeted Divider Fix */
 /* This targets the <li> that wraps your hr */
-.navbar .dropdown-menu > li:has(hr) {
-    min-height: 0 !important; 
-    padding: 0;
-    margin: 0;
-}
-
-.navbar .dropdown-menu hr {
-    display: block;
-    height: 1px;
-    border: none;
-    border-top: 4px solid #444; /* Visible grey line */
-    margin: 0.5rem 0;
-    opacity: 1; /* Ensures Bootstrap doesn't fade it out */
+.navbar .dropdown-menu > li:has(div) {
+  padding: 1.5rem 1rem !important;
+  border-bottom: 4px solid #444;
 }
 
 /* 4. Internal Layout (Icon + Text in a row) */
 .navbar .dropdown-menu > li > div {
     display: flex;
     flex-direction: column; /* Keeps Label above the content */
-    padding: 0.75rem 1.25rem;
+    /* padding: 0.75rem 1.5rem; */
     align-items: center;
-    gap: 0.75rem;
 }
 
 /* 5. Label Styling */
