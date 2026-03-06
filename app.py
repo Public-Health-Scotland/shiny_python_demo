@@ -83,16 +83,23 @@ app_ui = ui.page_navbar(
         ui.TagList(fa.icon_svg("ellipsis"), "More"),
         ui.nav_control(
             ui.div(
-                fa.icon_svg("person-circle-check"),
-                ui.span(ui.output_text("welcome"), id="welcome_text"),
-                id="welcome_div"
+                ui.span("User"),
+                ui.div(
+                    fa.icon_svg("person-circle-check"),
+                    ui.output_text("welcome", inline=True)
+                )
             )
         ),
-        # ui.nav_control(ui.output_text("welcome")), 
-        ui.nav_control(ui.div(
-            ui.input_dark_mode(id="theme_mode"),
-            ui.span(id = "theme-label")
-        )),
+        # Separator: In Python Shiny, we use nav_control to wrap non-nav elements
+        ui.nav_control(ui.tags.hr()),
+        ui.nav_control(
+            ui.div(
+                ui.span("Select theme:"),
+                ui.input_dark_mode(id="theme_mode")
+            )
+        ),
+        # Separator: In Python Shiny, we use nav_control to wrap non-nav elements
+        ui.nav_control(ui.tags.hr()),
         ui.nav_panel(
             # Name and icon
             ui.TagList(fa.icon_svg("database"), "Database"),
@@ -201,7 +208,7 @@ def server(input, output, session):
         user_name = session.user
         if user_name is None:
             user_name = getpass.getuser()
-        return f"Welcome {user_name}"
+        return user_name
 
     # Load data ONCE at session start
     @reactive.effect

@@ -1,57 +1,51 @@
-/* For nav_menu on the right: open the dropdown to the left of the toggle */
-/* .navbar .nav-item.dropdown .dropdown-menu {
-  
-} */
-/* Navbar nav items – BASE styles (desktop) */
-.navbar-nav .nav-link {
-  padding: 0.75rem 1rem;
-  font-weight: 500;
-  font-size: 1rem;
-  color: var(--phs-color-fg);
-  transition: all 0.2s ease;
-}
-
-.navbar-nav .nav-link:hover {
-  color: var(--phs-color-primary);
-}
-
-.navbar-nav .nav-link:focus-visible {
-  outline: 2px solid var(--phs-color-focus-ring);
-  outline-offset: 2px;
-}
-
+/* 1. The Main Dropdown Container */
 .navbar .dropdown-menu {
-  border: 1px solid var(--phs-color-border);
   border-radius: 4px;
-  z-index: 1050;
-  padding: 2rem;
   min-width: 15rem;
+  padding: 0.5rem 0; /* Reduced padding: standard for menus */
   right: 0 !important;
   left: auto !important;
-  transform: translateX(-1%);
 }
 
+/* 2. Reset List Items */
 .navbar .dropdown-menu > li {
-  min-height: 3rem !important;
+    padding: 0.8rem 1.25rem !important; /* Increases vertical thickness */
+    min-height: auto !important; /* REMOVED the 3rem trap */
+    /* list-style: none; */
+    align-items: center;
 }
 
-.navbar .dropdown-menu > li > * {
-  padding-left: 1rem;      /* your desired left padding */
+/* 3. Targeted Divider Fix */
+/* This targets the <li> that wraps your hr */
+.navbar .dropdown-menu > li:has(hr) {
+    min-height: 0 !important; 
+    padding: 0;
+    margin: 0;
 }
 
-.dropdown-item {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem; /* Consistent font size */
-  color: var(--phs-color-fg);
-  transition: background-color 0.2s ease;
+.navbar .dropdown-menu hr {
+    display: block;
+    height: 1px;
+    border: none;
+    border-top: 4px solid #444; /* Visible grey line */
+    margin: 0.5rem 0;
+    opacity: 1; /* Ensures Bootstrap doesn't fade it out */
 }
 
-.dropdown-item:hover {
-  background-color: var(--phs-color-surface-variant);
-  color: var(--phs-color-primary);
+/* 4. Internal Layout (Icon + Text in a row) */
+.navbar .dropdown-menu > li > div {
+    display: flex;
+    flex-direction: column; /* Keeps Label above the content */
+    padding: 0.75rem 1.25rem;
+    align-items: center;
+    gap: 0.75rem;
 }
 
-.dropdown-item.active {
-  background-color: var(--phs-color-primary);
-  color: var(--phs-color-status-primary-fg);
+/* 5. Label Styling */
+.navbar .dropdown-menu > li > div > span {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
 }
