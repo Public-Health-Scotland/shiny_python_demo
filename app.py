@@ -94,8 +94,11 @@ app_ui = ui.page_navbar(
         ui.nav_control(ui.tags.hr()),
         ui.nav_control(
             ui.div(
-                ui.span("Select theme:"),
-                ui.input_dark_mode(id="theme_mode")
+                ui.span("theme:"),
+                ui.div(
+                    ui.input_dark_mode(id="theme_mode"),
+                    ui.span(id="theme-label")
+                )
             )
         ),
         # Separator: In Python Shiny, we use nav_control to wrap non-nav elements
@@ -128,8 +131,7 @@ app_ui = ui.page_navbar(
         # ui.tags.script(src="https://cdn.plot.ly/plotly-3.3.1.min.js"), # online version
         ui.tags.script(src="www/javascript/plotly-3.3.1.min.js"),
         ui.tags.script(src="www/javascript/functs.js"),
-        # ui.tags.script(src="www/javascript/phs-thene-mode.js"),
-        # ui.tags.script(src="www/javascript/phs-navbar.js"),
+        ui.tags.script(src="www/javascript/phs-thene-mode.js"),
         ui.tags.link(rel="stylesheet", href="www/styles/phs.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_footer.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_navbar.css")
@@ -222,27 +224,24 @@ def server(input, output, session):
         ui.update_selectize("ddpieyear", choices=my_data.dict_years)
         ui.update_selectize("ddCountry", choices=my_data.country_list)
 
+    @reactive.Calc
     def current_theme():
-        return "plotly_dark"
-
-    # @reactive.Calc
-    # def current_theme():
-    #     if input.dark_mode_switch() == "dark":
-    #         template = "plotly_dark"
-    #     else:
-    #         template = "ggplot2"
-    #     return template
+        if input.theme_mode() == "dark":
+            template = "plotly_dark"
+        else:
+            template = "ggplot2"
+        return template
     
-    # @reactive.effect
-    # @reactive.event(input.dark_mode_switch)
-    # def _():
-    #     ui.remove_ui("header_color")
-    #     color_gridheader = '#4c4a4b' if input.dark_mode_switch() == 'dark' else 'white'
-    #     css_gridheader = f" shiny-data-frame {{ --shiny-datagrid-grid-header-bgcolor: {color_gridheader} !important }}"
+    @reactive.effect
+    @reactive.event(input.theme_mode)
+    def _():
+        ui.remove_ui("header_color")
+        color_gridheader = '#4c4a4b' if input.theme_mode() == 'dark' else 'white'
+        css_gridheader = f" shiny-data-frame {{ --shiny-datagrid-grid-header-bgcolor: {color_gridheader} !important }}"
         
-    #     if css_gridheader:
-    #         style = ui.tags.style(css_gridheader, id='header_color')
-    #         ui.insert_ui(style, selector='head')
+        if css_gridheader:
+            style = ui.tags.style(css_gridheader, id='header_color')
+            ui.insert_ui(style, selector='head')
     
     async def kpi_value_box(title: str, icon_name: str, message: str, current: float, historical: float):
         # get colour for your icon and current value

@@ -4,7 +4,7 @@
 function labelTheme(html){
   let theme = html.getAttribute("data-bs-theme");
   let label = document.getElementById("theme-label");
-  label.textContent = "Sel " + theme;
+  label.textContent = "Selected " + theme;
   return theme;
 }
 
@@ -33,10 +33,10 @@ function updatePlotlyTheme(theme) {
 document.addEventListener("DOMContentLoaded", () => {
     const html = document.documentElement;
     theme = labelTheme(html);
-    updatePlotlyTheme(theme);
+    //updatePlotlyTheme(theme);
     const observer = new MutationObserver(() => {
         theme = labelTheme(html);
-        updatePlotlyTheme(theme);
+        //updatePlotlyTheme(theme);
     });
 
     observer.observe(html, {
@@ -46,14 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 2. Re-apply theme when switching nav panels
     // 2. Watch for nav panel changes (Bootstrap 5)
-    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
-        tab.addEventListener("shown.bs.tab", () => {
-          setTimeout(() => {
-            theme = labelTheme(html);
-            updatePlotlyTheme(theme);
-          }, 50); // 50ms is enough
-        });
-    });
+    // document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+    //     tab.addEventListener("shown.bs.tab", () => {
+    //       setTimeout(() => {
+    //         theme = labelTheme(html);
+    //         updatePlotlyTheme(theme);
+    //       }, 50); // 50ms is enough
+    //     });
+    // });
 });
 
 // document.addEventListener("DOMContentLoaded", () => {

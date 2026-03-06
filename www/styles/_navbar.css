@@ -1,3 +1,7 @@
+.navbar svg {
+  margin-right: 0.85rem !important;
+}
+
 /* 1. The Main Dropdown Container */
 .navbar .dropdown-menu {
   border-radius: 4px;
@@ -11,7 +15,6 @@
 .navbar .dropdown-menu > li {
     padding: 0.8rem 1.25rem !important; /* Increases vertical thickness */
     min-height: auto !important; /* REMOVED the 3rem trap */
-    /* list-style: none; */
     align-items: center;
 }
 
