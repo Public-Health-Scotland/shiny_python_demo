@@ -2,23 +2,23 @@
 body { padding-top: 90px; }
 
 /* Modify the value_box */
-/* .value-box-showcase svg {
+.value-box-showcase svg {
   margin-right: 0rem !important;
 }
 
 .value-box-area {
   margin-left: 0rem !important;
-} */
+}
 
 /* Target the grid container */
-/* .value-box-grid {
+.value-box-grid {
     display: flex;
     flex-wrap: nowrap !important;     /* Prevents items from dropping to the next line */
-} */
+}
 
-/* .value-box .value-box-showcase i {
+.value-box .value-box-showcase i {
     font-size: clamp(30px, 4vw, 50px);
-} */
+}
 
 .div_hist_curr {
     font-size:0.30em;font-weight:100;display: block;padding-top: 10px;

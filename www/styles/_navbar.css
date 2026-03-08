@@ -2,6 +2,21 @@
   margin-right: 0.85rem !important;
 }
 
+.navbar-nav {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+@media (max-width: 998px) {
+  .navbar-collapse .nav-underline > .nav-item {
+    min-height: auto !important;
+    display: flex;
+    justify-content: center;
+    padding: 1rem 1rem !important;
+  }
+}
+
 /* 1. The Main Dropdown Container */
 .navbar .dropdown-menu {
   border-radius: 4px;
