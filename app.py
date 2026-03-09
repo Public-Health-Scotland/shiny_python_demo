@@ -90,8 +90,6 @@ app_ui = ui.page_navbar(
                 )
             )
         ),
-        # Separator: In Python Shiny, we use nav_control to wrap non-nav elements
-        # ui.nav_control(ui.tags.hr()),
         ui.nav_control(
             ui.div(
                 ui.span("theme:"),
@@ -101,8 +99,6 @@ app_ui = ui.page_navbar(
                 )
             )
         ),
-        # Separator: In Python Shiny, we use nav_control to wrap non-nav elements
-        # ui.nav_control(ui.tags.hr()),
         ui.nav_panel(
             # Name and icon
             ui.TagList(fa.icon_svg("database"), "Database"),
@@ -132,9 +128,11 @@ app_ui = ui.page_navbar(
         ui.tags.script(src="www/javascript/plotly-3.3.1.min.js"),
         ui.tags.script(src="www/javascript/functs.js"),
         ui.tags.script(src="www/javascript/phs-thene-mode.js"),
+        ui.tags.script(src="www/javascript/_navbar.js"),
         ui.tags.link(rel="stylesheet", href="www/styles/phs.css"),
+        ui.tags.link(rel="stylesheet", href="www/styles/_navbar.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_footer.css"),
-        ui.tags.link(rel="stylesheet", href="www/styles/_navbar.css")
+        ui.tags.link(rel="stylesheet", href="www/styles/_value_box.css")
     ),
     title=ui.tags.a(
         ui.tags.img(id="app-logo", alt="PHS logo"), "",

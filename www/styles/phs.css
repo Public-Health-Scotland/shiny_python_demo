@@ -1,43 +1,14 @@
-/* give a padding top to the body object */
-body { padding-top: 90px; }
-
-/* Modify the value_box */
-.value-box-showcase svg {
-  margin-right: 0rem !important;
+html[data-bs-theme="dark"] {
+    --phs-color-bg: #1a1a2e;
+    --phs-color-fg: #e8e8e8;
+    --phs-color-navbar-bg: #1a1a2e;
 }
 
-.value-box-area {
-  margin-left: 0rem !important;
+html[data-bs-theme='light'] {
+    --phs-color-bg: #ffffff;
+    --phs-color-fg: #333333;
+    --phs-color-navbar-bg: #ffffff;
 }
-
-/* Target the grid container */
-.value-box-grid {
-    display: flex;
-    flex-wrap: nowrap !important;     /* Prevents items from dropping to the next line */
-}
-
-.value-box .value-box-showcase i {
-    font-size: clamp(30px, 4vw, 50px);
-}
-
-.div_hist_curr {
-    font-size:0.30em;font-weight:100;display: block;padding-top: 10px;
-}
-
-.span_week {
-    margin-left:9px;font-size:0.40em;display:block;
-}
-
-.span_current {
-    margin-left:3px; font-weight:700;
-}
-
-/* Modify the footer */
-/* #app-footer {
-    text-align: center;
-    padding: 20px;
-    font-size: 0.9rem;
-} */
 
 /* Dark mode logo override */
 html[data-bs-theme='dark'] #app-logo {
@@ -65,4 +36,19 @@ html[data-bs-theme='light'] #ogl-logo {
     content: url('../img/ogl-logo.svg');
     width: 67px;
     height: 120px;
+}
+
+:root {
+  --navbar-height-default: 160px;
+  --navbar-height-scrolled: 105px;
+  --navbar-height: var(--navbar-height-default);
+  --navbar-height-mobile: 145px;
+  --navbar-height-mobile-scrolled: 90px;
+}
+
+/* give a padding top to the body object */
+body { 
+    padding: var(--navbar-height) 20px 0 20px; /* top | right | bottom | left */
+    background-color: var(--phs-color-bg);
+    color: var(--phs-color-fg);
 }

@@ -1,0 +1,30 @@
+/* Modify the value_box */
+.value-box-showcase svg {
+  margin-right: 0rem !important;
+}
+
+.value-box-area {
+  margin-left: 0rem !important;
+}
+
+/* Target the grid container */
+.value-box-grid {
+    display: flex;
+    flex-wrap: nowrap !important;     /* Prevents items from dropping to the next line */
+}
+
+.value-box .value-box-showcase i {
+    font-size: clamp(30px, 4vw, 50px);
+}
+
+.div_hist_curr {
+    font-size:0.30em;font-weight:100;display: block;padding-top: 10px;
+}
+
+.span_week {
+    margin-left:9px;font-size:0.40em;display:block;
+}
+
+.span_current {
+    margin-left:3px; font-weight:700;
+}
