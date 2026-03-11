@@ -44,11 +44,13 @@ html[data-bs-theme='light'] #ogl-logo {
   --navbar-height: var(--navbar-height-default);
   --navbar-height-mobile: 145px;
   --navbar-height-mobile-scrolled: 90px;
+  --phs-max-width: 1290px;
+  --phs-dashboard-padding: 20px;
 }
 
 /* give a padding top to the body object */
 body { 
-    padding: var(--navbar-height) 20px 0 20px; /* top | right | bottom | left */
+    padding: var(--navbar-height) var(--phs-dashboard-padding) 0 var(--phs-dashboard-padding); /* top | right | bottom | left */
     background-color: var(--phs-color-bg);
     color: var(--phs-color-fg);
 }

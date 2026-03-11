@@ -3,6 +3,12 @@
   height: var(--navbar-height);
 }
 
+/* Container inside navbar - constrain max width and use flexbox for alignment */
+.navbar > .container-fluid {
+  padding-left: var(--phs-dashboard-padding);
+  padding-right: var(--phs-dashboard-padding);
+}
+
 /* space between the icon and the text in the navbar */
 .navbar svg {
   margin-right: 0.85rem !important;
