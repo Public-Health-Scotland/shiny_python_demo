@@ -125,7 +125,7 @@ app_ui = ui.page_navbar(
     ui.head_content(
         ui.tags.link(rel="icon", href="www/img/phs-logo.svg", type="image/x-icon"),
         # ui.tags.script(src="https://cdn.plot.ly/plotly-3.3.1.min.js"), # online version
-        ui.tags.script(src="www/javascript/plotly-3.3.1.min.js"),
+        ui.tags.script(src="www/javascript/plotly-3.4.0.min.js"),
         ui.tags.script(src="www/javascript/functs.js"),
         ui.tags.script(src="www/javascript/phs-thene-mode.js"),
         ui.tags.script(src="www/javascript/_navbar.js"),
@@ -200,6 +200,7 @@ def server(input, output, session):
     myplots = PlotBuilder()
 
     df_val = reactive.Value(None)
+    kpi_cache = reactive.Value(None)  # cache KPI stats after load
 
     @output
     @render.text
@@ -216,6 +217,16 @@ def server(input, output, session):
         df = await my_data.load_data()
         df_val.set(df)
         
+        # Cache KPI values once
+        kpi_cache.set({
+            "n_rows":   my_data.happiness_data.shape[0],
+            "n_cols":   my_data.happiness_data.shape[1],
+            "year_max": my_data.happiness_data["Year"].max(),
+            "year_min": my_data.happiness_data["Year"].min(),
+            "score_max": round(my_data.happiness_data["Ladder score"].max(), 2),
+            "score_min": round(my_data.happiness_data["Ladder score"].min(), 2),
+        })
+
         # Now the country list is ready!
         ui.update_selectize("byear", choices=my_data.dict_years)
         ui.update_selectize("mapyear", choices=my_data.dict_years)
@@ -241,7 +252,7 @@ def server(input, output, session):
             style = ui.tags.style(css_gridheader, id='header_color')
             ui.insert_ui(style, selector='head')
     
-    async def kpi_value_box(title: str, icon_name: str, message: str, current: float, historical: float):
+    def kpi_value_box(title: str, icon_name: str, message: str, current: float, historical: float):
         # get colour for your icon and current value
         my_kpi_color = "#9B4393"
         return ui.value_box(
@@ -262,21 +273,28 @@ def server(input, output, session):
 
     @output
     @render.ui
-    async def kpi_records():
-        return await kpi_value_box("KPI number of records", "database", 
-                                    "(Columns - Rows)", my_data.happiness_data.shape[0], my_data.happiness_data.shape[1])
+    def kpi_records():
+        kpi = kpi_cache()
+        if kpi is None:
+            return
+        return kpi_value_box("KPI number of records", "database", "(Columns - Rows)", kpi["n_rows"], kpi["n_cols"])
 
     @output
     @render.ui
-    async def kpi_scale():
-        return await kpi_value_box("KPI happiness scale", "calendar", 
-                                    "Year (Min - Max)", my_data.happiness_data.Year.max(), my_data.happiness_data.Year.min())
+    def kpi_scale():
+        kpi = kpi_cache()
+        if kpi is None:
+            return
+        return kpi_value_box("KPI happiness scale", "calendar", "Year (Min - Max)", kpi["year_max"], kpi["year_min"])
 
     @output
     @render.ui
-    async def kpi_other():
-        return await kpi_value_box("KPI Title", "face-smile", 
-                                    "Score (Min - max)", round(my_data.happiness_data['Ladder score'].max(), 2), round(my_data.happiness_data['Ladder score'].min(), 2))
+    def kpi_other():
+        kpi = kpi_cache()
+        if kpi is None:
+            return
+        return kpi_value_box("KPI Title", "face-smile",
+                                    "Score (Min - max)", kpi["score_max"], kpi["score_min"])
     
     @output
     @render.data_frame
@@ -286,43 +304,50 @@ def server(input, output, session):
     @output
     @render.ui
     async def top10_bar():
+        if not input.byear():  # guard against empty
+            return
         year = int(input.byear())
-        data = await my_data.get_top10_happiest_countries(year, 10)
-        plot, descript = await myplots.build_top10_bar(data, current_theme(), year)
+        data = await my_data.get_top_happiest_countries(year, 10)
+        plot, descript = myplots.build_top10_bar(data, current_theme(), year)
         return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
     @output
     @render.ui
     async def happiness_map():
-        if input.mapyear() != '':
-            year = int(input.mapyear())
-            data = await my_data.get_data_by_year(year)
-            plot, descript = await myplots.build_happiness_map(data, current_theme(), year)
-            return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
+        if not input.mapyear():
+            return
+        year = int(input.mapyear())
+        data = await my_data.get_data_by_year(year)
+        plot, descript = myplots.build_happiness_map(data, current_theme(), year)
+        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
     @output
     @render.ui
     async def pietop3():
-        if input.ddpieyear() != '':
-            year = int(input.ddpieyear())
-            data = await my_data.get_top10_happiest_countries(year=year, top=3)
-            plot, descript = await myplots.build_pietop3(data, current_theme(), year, 3)
-            return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
+        if not input.ddpieyear():
+            return
+        year = int(input.ddpieyear())
+        data = await my_data.get_top_happiest_countries(year=year, top=3)
+        plot, descript = myplots.build_pietop3(data, current_theme(), year, 3)
+        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
     @output
     @render.ui
     async def scatterplot():
+        if my_data.happiness_data is None:  # guard until data loaded
+            return
         data = await my_data.get_clean_data_for_scatter()
-        plot, descript = await myplots.build_scatterplot(data, current_theme())
+        plot, descript = myplots.build_scatterplot(data, current_theme())
         return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
     @output
     @render.ui
     async def linecountry():
-        if input.ddCountry() != '':
-            selected_country = input.ddCountry()
-            data = await my_data.get_data_by_country(selected_country)
-            plot, descript = await myplots.build_linecountry(data, current_theme(), selected_country)
-            return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
+        if not input.ddCountry():
+            return
+        selected_country = input.ddCountry()
+        data = await my_data.get_data_by_country(selected_country)
+        plot, descript = myplots.build_linecountry(data, current_theme(), selected_country)
+        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
 app = App(app_ui, server, static_assets={"/www": assets_folder})

@@ -1,0 +1,24 @@
+{
+    "plotly_dark": {
+        "layout": {
+            "colorway": ["#948DA3", "#AF69A9", "#3393DD", "#655E9D", "#9B4393",
+                         "#6B5C85", "#1E7F84", "#C73918", "#0078D4", "#3F3685"],
+            "paper_bgcolor": "#1a1a2e",
+            "plot_bgcolor": "#1a1a2e",
+            "font": {
+                "color": "#e8e8e8"
+            }
+        }
+    },
+    "ggplot2": {
+        "layout": {
+            "colorway": ["#3F3685", "#0078D4", "#C73918", "#1E7F84", "#6B5C85",
+                         "#9B4393", "#655E9D", "#3393DD", "#AF69A9", "#948DA3"],
+            "paper_bgcolor": "#ffffff",
+            "plot_bgcolor": "#ffffff",
+            "font": {
+                "color": "#333333"
+            }
+        }
+    }
+}

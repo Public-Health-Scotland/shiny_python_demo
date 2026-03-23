@@ -3,23 +3,30 @@ import plotly.express as px
 # import plotly.graph_objects as go
 import plotly.io as pio
 import pandas as pd
+import json
 
-list_color = ['#3F3685', '#0078D4', '#C73918', '#1E7F84', '#6B5C85', '#9B4393', '#655E9D', '#3393DD', '#AF69A9', '#948DA3']
-# Load the built-in template
-pio.templates["plotly_dark"]["layout"].update({
-    # from ligther to darker
-    'colorway': list_color
-})
-pio.templates["ggplot2"]["layout"].update({
-    # from darker to ligther
-    'colorway': list_color
-})
+# Load and register template once at module level
+def _load_templates(path: str = "templates/phs_plotly.json") -> None:
+    with open(path) as f:
+        phs_theme = json.load(f)
+    for template_name, config in phs_theme.items():
+        pio.templates[template_name]["layout"].update(config["layout"])
+
+_load_templates()
 
 class PlotBuilder():
-    def __init__(self):
-        self.margin = dict(t=40, b=0, l=0, r=0)
+    # Value objects for plot builders, to avoid reloading templates and setting layout defaults multiple times
+    __slots__ = ("_layout_defaults",)
 
-    async def build_top10_bar(self, data: pd.DataFrame, my_theme: str, year: int) -> tuple[str, str]:
+    def __init__(self):
+        self._layout_defaults = dict(margin=dict(t=40, b=0, l=0, r=0))
+
+    def _to_html(self, fig) -> str:
+        fig.update_layout(**self._layout_defaults)
+        return fig.to_html(full_html=False, include_plotlyjs=False)
+
+
+    def build_top10_bar(self, data: pd.DataFrame, my_theme: str, year: int) -> tuple[str, str]:
         description = f"This bar plot shows the top 10 in {year}"
         fig = px.bar(
             data,
@@ -30,10 +37,9 @@ class PlotBuilder():
             labels={'Ladder score': 'Happiness Score', 'Country name': 'Country'}, 
             template = my_theme
         )
-        fig.update_layout(margin=self.margin)
-        return fig.to_html(full_html=False, include_plotlyjs=False), description
+        return self._to_html(fig), description
 
-    async def build_happiness_map(self, data: pd.DataFrame, my_theme: str, year: int) -> tuple[str, str]:
+    def build_happiness_map(self, data: pd.DataFrame, my_theme: str, year: int) -> tuple[str, str]:
         description = f"Heat map about Ladder score by country in {year}"
         fig = px.choropleth(
             data,
@@ -41,27 +47,24 @@ class PlotBuilder():
             locationmode='country names',  # Specify that we're using country names
             color='Ladder score',  # Use 'Life Ladder' for happiness values
             hover_name='Country name',  # Use 'Country name' for the hover information
-            color_discrete_sequence=px.colors.sequential.YlGnBu,
             labels={'Ladder score': 'Life Ladder Score'},
             title=f'World Happiness in {year}', 
             template = my_theme
         )
-        fig.update_layout(margin=self.margin)
-        return fig.to_html(full_html=False, include_plotlyjs=False), description
+        return self._to_html(fig), description
     
-    async def build_scatterplot(self, data: pd.DataFrame, my_theme: str) -> tuple[str, str]:
+    def build_scatterplot(self, data: pd.DataFrame, my_theme: str, trendline: str | None = "lowess") -> tuple[str, str]:
         description = "Scatterplot between Ladder score and GDP per capita"
         fig = px.scatter(
             data,
             x="Ladder score",
             y="Explained by: Log GDP per capita",
-            trendline="lowess", 
+            trendline=trendline,
             template = my_theme
         )
-        fig.update_layout(margin=self.margin)
-        return fig.to_html(full_html=False, include_plotlyjs=False), description
+        return self._to_html(fig), description
 
-    async def build_linecountry(self, data: pd.DataFrame, my_theme: str, selected_country: str) -> tuple[str, str]:
+    def build_linecountry(self, data: pd.DataFrame, my_theme: str, selected_country: str) -> tuple[str, str]:
         description = f"Area plot based on Ladder score per year for {selected_country}"
         fig = px.area(
             data, 
@@ -72,13 +75,12 @@ class PlotBuilder():
             template=my_theme
         )
         fig.update_layout(
-            margin=self.margin, 
             xaxis_title='Date',
             yaxis_title='Value'
         )
-        return fig.to_html(full_html=False, include_plotlyjs=False), description
+        return self._to_html(fig), description
 
-    async def build_pietop3(self, data: pd.DataFrame, my_theme: str, year: int, top: int) -> tuple[str, str]:
+    def build_pietop3(self, data: pd.DataFrame, my_theme: str, year: int, top: int) -> tuple[str, str]:
         description = f"Pie chart showing the distribution of the top {top} happiest countries in {year}"
         fig = px.pie(
             data,
@@ -87,5 +89,4 @@ class PlotBuilder():
             title=f'Top {top} Happiest Countries Distribution in {year}',
             template=my_theme
         )
-        fig.update_layout(margin=self.margin)
-        return fig.to_html(full_html=False, include_plotlyjs=False), description
+        return self._to_html(fig), description
