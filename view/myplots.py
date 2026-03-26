@@ -5,12 +5,16 @@ import plotly.io as pio
 import pandas as pd
 import json
 
+_templates_loaded = False
+
 # Load and register template once at module level
-def _load_templates(path: str = "templates/phs_plotly.json") -> None:
+def _load_templates(path: str = "www/config/phs_plotly.json") -> None:
+    global _templates_loaded
     with open(path) as f:
         phs_theme = json.load(f)
     for template_name, config in phs_theme.items():
         pio.templates[template_name]["layout"].update(config["layout"])
+    _templates_loaded = True
 
 _load_templates()
 
