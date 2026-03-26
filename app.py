@@ -132,7 +132,8 @@ app_ui = ui.page_navbar(
         ui.tags.link(rel="stylesheet", href="www/styles/phs.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_navbar.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_footer.css"),
-        ui.tags.link(rel="stylesheet", href="www/styles/_value_box.css")
+        ui.tags.link(rel="stylesheet", href="www/styles/_value_box.css"),
+        ui.tags.link(rel="stylesheet", href="www/styles/_datagrid.css")
     ),
     title=ui.tags.a(
         ui.tags.img(id="app-logo", alt="PHS logo"), "",
@@ -235,22 +236,8 @@ def server(input, output, session):
 
     @reactive.Calc
     def current_theme():
-        if input.theme_mode() == "dark":
-            template = "plotly_dark"
-        else:
-            template = "ggplot2"
+        template = "plotly_dark" if input.theme_mode() == "dark" else "ggplot2"
         return template
-    
-    @reactive.effect
-    @reactive.event(input.theme_mode)
-    def _():
-        ui.remove_ui("header_color")
-        color_gridheader = '#4c4a4b' if input.theme_mode() == 'dark' else 'white'
-        css_gridheader = f" shiny-data-frame {{ --shiny-datagrid-grid-header-bgcolor: {color_gridheader} !important }}"
-        
-        if css_gridheader:
-            style = ui.tags.style(css_gridheader, id='header_color')
-            ui.insert_ui(style, selector='head')
     
     def kpi_value_box(title: str, icon_name: str, message: str, current: float, historical: float):
         # get colour for your icon and current value

@@ -1,0 +1,3 @@
+shiny-data-frame {
+  --shiny-datagrid-grid-header-bgcolor: var(--phs-data-grid-header-bgcolor) !important;
+}

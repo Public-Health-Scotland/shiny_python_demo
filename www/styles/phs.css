@@ -2,12 +2,14 @@ html[data-bs-theme="dark"] {
     --phs-color-bg: #1a1a2e;
     --phs-color-fg: #e8e8e8;
     --phs-color-navbar-bg: #1a1a2e;
+    --phs-data-grid-header-bgcolor: #4c4a4b;
 }
 
 html[data-bs-theme='light'] {
     --phs-color-bg: #ffffff;
     --phs-color-fg: #333333;
     --phs-color-navbar-bg: #ffffff;
+    --phs-data-grid-header-bgcolor: #ffffff;
 }
 
 /* Dark mode logo override */
