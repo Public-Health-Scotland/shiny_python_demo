@@ -7,12 +7,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-Shiny.addCustomMessageHandler('update_url', function(message) {
-    console.log("Received message from Python:", message);
-    
-    const url = new URL(window.location);
-    url.searchParams.set(message.key, message.value);
-    
-    // This line actually changes the browser's address bar
-    window.history.pushState({}, '', url);
+// Function to handle the URL hash on page load
+function syncHashToShiny() {
+    const currentHash = window.location.hash.replace('#', '');
+    if (currentHash) {
+        // Send the hash value back to Python Shiny
+        Shiny.setInputValue('initial_hash', currentHash);
+    }
+}
+
+// Update the hash whenever the user changes tabs
+Shiny.addCustomMessageHandler('update_hash', function(hash_value) {
+  window.location.hash = hash_value;
+});
+
+// Run once when the document is ready
+$(document).on('shiny:connected', function(event) {
+  syncHashToShiny();
 });

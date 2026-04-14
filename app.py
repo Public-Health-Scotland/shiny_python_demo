@@ -213,13 +213,15 @@ def server(input, output, session):
     @reactive.effect
     @reactive.event(input.selected_tab)
     async def _():
-        tab_value = input.selected_tab()
-        print(tab_value)
-        # 2. Send the message to the Javascript function we defined above
-        await session.send_custom_message("update_url", {
-            "key": "page", 
-            "value": tab_value
-        })
+        # Add tab value to the URL
+        tab = input.selected_tab()
+        await session.send_custom_message("update_hash", tab)
+
+    @reactive.effect
+    @reactive.event(input.initial_hash)
+    def _():
+        # React to the initial hash sent from JS
+        ui.update_navs("selected_tab", selected=input.initial_hash())
 
     @output
     @render.text
