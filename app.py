@@ -13,7 +13,7 @@ app_ui = ui.page_navbar(
     ui.nav_panel(
         # Name and icon
         ui.TagList(fa.icon_svg("house"), "Home"),
-
+        
         ui.layout_column_wrap(
             ui.output_ui("kpi_records"),
             ui.output_ui("kpi_scale"),
@@ -51,7 +51,8 @@ app_ui = ui.page_navbar(
                     ui.output_ui("linecountry"),
                     full_screen=True),
             col_widths=[12]
-        )
+        ),
+        value="home"
     ),
     ui.nav_panel(
         # Name and icon
@@ -63,7 +64,8 @@ app_ui = ui.page_navbar(
                 ui.input_selectize("byear", "Choose", choices=[])
             ),
             ui.output_ui("top10_bar")
-        )
+        ),
+        value="bar_plots"
     ),
     ui.nav_panel(
         # Name and icon
@@ -75,7 +77,8 @@ app_ui = ui.page_navbar(
                 ui.input_selectize("mapyear", "Choose", choices=[])
             ),
             ui.output_ui("happiness_map")
-        )
+        ),
+        value="geodata"
     ),
     ui.nav_spacer(),
     ui.nav_menu(
@@ -108,17 +111,20 @@ app_ui = ui.page_navbar(
                         full_screen=True
                 ),
                 col_widths=[12]
-            )
+            ),
+            value="database"
         ),
         ui.nav_panel(
             # Name and icon
             ui.TagList(fa.icon_svg("codepen"), "Contact"),
-            ui.h2("Contact us")
+            ui.h2("Contact us"),
+            value="contact"
         ),
         ui.nav_panel(
             # Name and icon
             ui.TagList(fa.icon_svg("people-carry-box"), "Help"),
-            ui.h2("Help Page")
+            ui.h2("Help Page"),
+            value="help"
         )
     ),
     # Inject Plotly JS globally
@@ -193,6 +199,7 @@ app_ui = ui.page_navbar(
         class_="phs-footer",
         role="contentinfo"
     ),
+    id="selected_tab",
     window_title="World happyness"
 )
 
@@ -202,6 +209,17 @@ def server(input, output, session):
 
     df_val = reactive.Value(None)
     kpi_cache = reactive.Value(None)  # cache KPI stats after load
+
+    @reactive.effect
+    @reactive.event(input.selected_tab)
+    async def _():
+        tab_value = input.selected_tab()
+        print(tab_value)
+        # 2. Send the message to the Javascript function we defined above
+        await session.send_custom_message("update_url", {
+            "key": "page", 
+            "value": tab_value
+        })
 
     @output
     @render.text
