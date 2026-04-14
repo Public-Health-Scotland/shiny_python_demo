@@ -128,7 +128,7 @@ app_ui = ui.page_navbar(
         ui.tags.script(src="www/javascript/plotly-3.4.0.min.js"),
         ui.tags.script(src="www/javascript/functs.js"),
         ui.tags.script(src="www/javascript/phs-thene-mode.js"),
-        ui.tags.script(src="www/javascript/_navbar.js"),
+        # ui.tags.script(src="www/javascript/_navbar.js"),
         ui.tags.link(rel="stylesheet", href="www/styles/phs.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_navbar.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_footer.css"),
@@ -142,7 +142,7 @@ app_ui = ui.page_navbar(
         class_ = "navbar-brand d-flex align-items-center"
     ),
     lang="en",
-    navbar_options=ui.navbar_options(position="fixed-top"),
+    # navbar_options=ui.navbar_options(position="fixed-top"),
     footer=ui.tags.footer(
         ui.div(
             ui.div(
@@ -211,6 +211,11 @@ def server(input, output, session):
         if user_name is None:
             user_name = getpass.getuser()
         return user_name
+
+    # @reactive.effect
+    # async def _expire_session():
+    #     await asyncio.sleep(180)  # wait 1200s, then continue
+    #     await session.close()
 
     # Load data ONCE at session start
     @reactive.effect

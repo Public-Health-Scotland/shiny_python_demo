@@ -3,6 +3,7 @@ html[data-bs-theme="dark"] {
     --phs-color-fg: #e8e8e8;
     --phs-color-navbar-bg: #1a1a2e;
     --phs-data-grid-header-bgcolor: #4c4a4b;
+    --phs-color-primary: #9f9bc2;
 }
 
 html[data-bs-theme='light'] {
@@ -10,6 +11,7 @@ html[data-bs-theme='light'] {
     --phs-color-fg: #333333;
     --phs-color-navbar-bg: #ffffff;
     --phs-data-grid-header-bgcolor: #ffffff;
+    --phs-color-primary: #3F3685;
 }
 
 /* Dark mode logo override */
@@ -43,16 +45,31 @@ html[data-bs-theme='light'] #ogl-logo {
 :root {
   --navbar-height-default: 160px;
   --navbar-height-scrolled: 105px;
-  --navbar-height: var(--navbar-height-default);
+  --navbar-height: var(--navbar-height-scrolled);
   --navbar-height-mobile: 145px;
   --navbar-height-mobile-scrolled: 90px;
   --phs-max-width: 1290px;
   --phs-dashboard-padding: 20px;
+  --bs-navbar-padding-x: 0;
+  --bs-navbar-padding-y: 0.5rem;
+  --bs-navbar-brand-padding-y: 0.3125rem;
+  --bs-navbar-brand-margin-end: 1rem;
+  --bs-navbar-brand-font-size: 1.25rem;
+  --bs-dropdown-item-padding-x: 1rem;
+  --bs-dropdown-item-padding-y: 0.25rem;
 }
 
 /* give a padding top to the body object */
 body { 
-    padding: var(--navbar-height) var(--phs-dashboard-padding) 0 var(--phs-dashboard-padding); /* top | right | bottom | left */
+    margin: 0;
     background-color: var(--phs-color-bg);
     color: var(--phs-color-fg);
+}
+
+body > .container-fluid {
+  flex: 1 0 auto;
+  margin: 0;
+  padding: var(--navbar-height) var(--phs-dashboard-padding) 0 var(--phs-dashboard-padding);
+  display: flex;
+  flex-direction: column;
 }
