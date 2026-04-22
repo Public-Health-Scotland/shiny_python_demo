@@ -6,9 +6,11 @@ from data.data_con import DataLoader
 from view.myplots import PlotBuilder
 from helper.functs import phs_config_get, get_social_urls, get_phs_url, get_ogl_url, get_compliance_list
 
+# important settings
 assets_folder = Path(__file__).parent / 'www'
 cfg = phs_config_get(assets_folder / "config" / "default-config.json")
 
+# Define the UI
 app_ui = ui.page_navbar(
     ui.nav_panel(
         # Name and icon
