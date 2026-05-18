@@ -1,0 +1,6 @@
+/* Fix for the spinner inside fixed-height cards */
+.shiny-bound-output.recalculating {
+    min-height: 100px;
+    display: block;
+    position: relative;
+}

@@ -4,6 +4,13 @@ html[data-bs-theme="dark"] {
     --phs-color-navbar-bg: #1a1a2e;
     --phs-data-grid-header-bgcolor: #4c4a4b;
     --phs-color-primary: #9f9bc2;
+    --phs-color-navbar-border: #cccccc;
+    --phs-color-footer-bg: #252542;
+    --phs-color-border: #cccccc;
+    --phs-color-link: #80bcea;
+    --phs-color-link-hover: #b3d7f2;
+    --phs-color-text-muted: #b5aec2;
+    --phs-color-surface-hover: #a2179f26;
 }
 
 html[data-bs-theme='light'] {
@@ -12,34 +19,33 @@ html[data-bs-theme='light'] {
     --phs-color-navbar-bg: #ffffff;
     --phs-data-grid-header-bgcolor: #ffffff;
     --phs-color-primary: #3F3685;
+    --phs-color-navbar-border: #3d3d5c;
+    --phs-color-footer-bg: #f5f5f5;
+    --phs-color-border: #3d3d5c;
+    --phs-color-link: #0078d4;
+    --phs-color-link-hover: #004d88;
+    --phs-color-text-muted: #666666;
+    --phs-color-surface-hover: #ecebf3;
 }
 
 /* Dark mode logo override */
-html[data-bs-theme='dark'] #app-logo {
+html[data-bs-theme='dark'] .phs-navbar-logo {
     content: url('../img/phs-logo-white.svg');
-    width: 200px;
-    height: auto;
 }
 
 /* light mode logo override */
-html[data-bs-theme='light'] #app-logo {
+html[data-bs-theme='light'] .phs-navbar-logo {
     content: url('../img/phs-logo.svg');
-    width: 200px;
-    height: auto;
 }
 
 /* Dark mode logo override */
-html[data-bs-theme='dark'] #ogl-logo {
+html[data-bs-theme='dark'] .ogl-logo {
     content: url('../img/ogl-logo-white.svg');
-    width: 67px;
-    height: 120px;
 }
 
 /* light mode logo override */
-html[data-bs-theme='light'] #ogl-logo {
+html[data-bs-theme='light'] .ogl-logo {
     content: url('../img/ogl-logo.svg');
-    width: 67px;
-    height: 120px;
 }
 
 :root {
@@ -49,7 +55,7 @@ html[data-bs-theme='light'] #ogl-logo {
   --navbar-height-mobile: 145px;
   --navbar-height-mobile-scrolled: 90px;
   --phs-max-width: 1290px;
-  --phs-dashboard-padding: 20px;
+  --phs-dashboard-padding: 32px;
   --bs-navbar-padding-x: 0;
   --bs-navbar-padding-y: 0.5rem;
   --bs-navbar-brand-padding-y: 0.3125rem;
@@ -57,11 +63,13 @@ html[data-bs-theme='light'] #ogl-logo {
   --bs-navbar-brand-font-size: 1.25rem;
   --bs-dropdown-item-padding-x: 1rem;
   --bs-dropdown-item-padding-y: 0.25rem;
+  --bs-body-font-family: "Source Sans 3";
 }
 
 /* give a padding top to the body object */
 body { 
-    margin: 0;
+    font-family: var(--bs-body-font-family);
+    padding: 88px 0px 0px 0px; 
     background-color: var(--phs-color-bg);
     color: var(--phs-color-fg);
 }
@@ -69,7 +77,11 @@ body {
 body > .container-fluid {
   flex: 1 0 auto;
   margin: 0;
-  padding: var(--navbar-height) var(--phs-dashboard-padding) 0 var(--phs-dashboard-padding);
+  padding: 0;
   display: flex;
   flex-direction: column;
+}
+
+body > .container-fluid .tab-content {
+  padding: 32px var(--phs-dashboard-padding) 0px var(--phs-dashboard-padding);
 }

@@ -131,24 +131,25 @@ app_ui = ui.page_navbar(
     ui.head_content(
         ui.tags.link(rel="icon", href="www/img/phs-logo.svg", type="image/x-icon"),
         # ui.tags.script(src="https://cdn.plot.ly/plotly-3.3.1.min.js"), # online version
-        ui.tags.script(src="www/javascript/plotly-3.4.0.min.js"),
-        ui.tags.script(src="www/javascript/functs.js"),
-        ui.tags.script(src="www/javascript/phs-thene-mode.js"),
-        # ui.tags.script(src="www/javascript/_navbar.js"),
+        ui.tags.script(src="www/js/plotly-3.5.0.min.js"),
+        ui.tags.script(src="www/js/functs.js"),
+        ui.tags.script(src="www/js/phs-thene-mode.js"),
+        # ui.tags.script(src="www/js/_navbar.js"),
         ui.tags.link(rel="stylesheet", href="www/styles/phs.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_navbar.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_footer.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_value_box.css"),
-        ui.tags.link(rel="stylesheet", href="www/styles/_datagrid.css")
+        ui.tags.link(rel="stylesheet", href="www/styles/_datagrid.css"),
+        ui.tags.link(rel="stylesheet", href="www/styles/_spinner.css")
     ),
     title=ui.tags.a(
-        ui.tags.img(id="app-logo", alt="PHS logo"), "",
+        ui.tags.img(class_ = "phs-navbar-logo", alt="PHS logo"), "",
         href = get_phs_url(cfg),
         target = "_blank",
         class_ = "navbar-brand d-flex align-items-center"
     ),
     lang="en",
-    # navbar_options=ui.navbar_options(position="fixed-top"),
+    navbar_options=ui.navbar_options(position="fixed-top"),
     footer=ui.tags.footer(
         ui.div(
             ui.div(
@@ -178,7 +179,7 @@ app_ui = ui.page_navbar(
             ),
             ui.div(
                 ui.div(
-                    ui.tags.img(id="ogl-logo", alt="Open Government Licence logo"),
+                    ui.tags.img(class_="ogl-logo", alt="Open Government Licence logo"),
                     ui.span("All content is available under the ", 
                             ui.tags.a("Open Government Licence",
                                         href = get_ogl_url(cfg),
@@ -221,7 +222,7 @@ def server(input, output, session):
     @reactive.event(input.initial_hash)
     def _():
         # React to the initial hash sent from JS
-        ui.update_navs("selected_tab", selected=input.initial_hash())
+        ui.update_navset("selected_tab", selected=input.initial_hash())
 
     @output
     @render.text
@@ -338,6 +339,8 @@ def server(input, output, session):
     async def pietop3():
         if not input.ddpieyear():
             return
+        # 
+        
         year = int(input.ddpieyear())
         data = await my_data.get_top_happiest_countries(year=year, top=3)
         plot, descript = myplots.build_pietop3(data, current_theme(), year, 3)
