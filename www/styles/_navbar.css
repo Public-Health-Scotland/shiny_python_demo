@@ -1,57 +1,12 @@
 .navbar {
-  position: fixed;
-  z-index: 1000;
-  width: 100%;
-  display: flex;
-  display: -webkit-flex;
-  flex-wrap: wrap;
-  -webkit-flex-wrap: wrap;
-  align-items: center;
-  -webkit-align-items: center;
-  justify-content: space-between;
-  -webkit-justify-content: space-between;
-  padding: var(--bs-navbar-padding-y) var(--bs-navbar-padding-x);
+  background-color: var(--phs-color-navbar-bg);
+  border-bottom: 1px solid var(--phs-color-navbar-border) !important;
+  height: var(--navbar-height);
 }
 
-.navbar > .container,
-.navbar > .container-fluid,
-.navbar > .container-sm,
-.navbar > .container-md,
-.navbar > .container-lg,
-.navbar > .container-xl,
-.navbar > .container-xxl {
-  display: flex;
-  display: -webkit-flex;
-  flex-wrap: inherit;
-  -webkit-flex-wrap: inherit;
-  align-items: center;
-  -webkit-align-items: center;
-  justify-content: space-between;
-  -webkit-justify-content: space-between;
-}
-
-.navbar-brand {
-  padding-top: var(--bs-navbar-brand-padding-y);
-  padding-bottom: var(--bs-navbar-brand-padding-y);
-  margin-right: var(--bs-navbar-brand-margin-end);
-  font-size: var(--bs-navbar-brand-font-size);
-  text-decoration: none;
-  -webkit-text-decoration: none;
-  -moz-text-decoration: none;
-  -ms-text-decoration: none;
-  -o-text-decoration: none;
-  white-space: nowrap;
-}
-
-.navbar-nav {
-  display: flex;
-  display: -webkit-flex;
-  flex-direction: column;
-  -webkit-flex-direction: column;
-  padding-left: 0;
-  margin-bottom: 0;
-  list-style: none;
-}
+/* .navbar.shrunk {
+  height: 105px;
+} */
 
 .navbar .container-fluid, .navbar .container-sm, .navbar .container-md, .navbar .container-lg, .navbar .container-xl, .navbar .container-xxl {
   max-width: 1290px;
@@ -65,55 +20,123 @@
   justify-content: space-between;
 }
 
-.navbar .dropdown-menu .dropdown-item {
-  display: block;
-  padding: var(--bs-dropdown-item-padding-y) var(--bs-dropdown-item-padding-x);
-  clear: both;
-  font-weight: 400;
-  text-align: inherit;
-  text-decoration: none;
-  -webkit-text-decoration: none;
-  -moz-text-decoration: none;
-  -ms-text-decoration: none;
-  -o-text-decoration: none;
-  white-space: nowrap;
-  background-color: transparent;
-  border: 0;
+.navbar .phs-navbar-logo {
+  width: 130px;
+  height: auto;
+  margin: 16px;
+  transition: all 0.3s ease-in-out;
+}
+
+#app-brand {
+    display: flex;
+    align-items: center;
+}
+
+.navbar svg {
+  margin-right: 0.65rem !important;
+}
+
+.navbar .dropdown-menu {
+  border-radius: 4px;
+  min-width: 15rem;
+  right: 0 !important;
+  left: auto !important;
 }
 
 .navbar .dropdown-menu > li {
-  margin: 1.5rem 0 1.5rem 0 !important; /* Increases vertical thickness */
-  height: 100% !important;
+    padding: 1rem 1rem !important; /* Increases vertical thickness */
+    min-height: auto !important; /* REMOVED the 3rem trap */
+    align-items: center;
+}
+
+.navbar .dropdown-menu > li:has(div) {
+  padding: 1.5rem 1rem !important;
+  border-bottom: 2px solid #444;
+}
+
+.navbar .dropdown-menu > li > div {
+    display: flex;
+    flex-direction: column; /* Keeps Label above the content */
+    align-items: center;
+}
+
+.navbar .dropdown-menu > li > div > span {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.navbar .container-fluid, .navbar .container-sm, .navbar .container-md, .navbar .container-lg, .navbar .container-xl, .navbar .container-xxl {
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .dropdown-menu.show .dropdown-item.active {
   background-color: var(--phs-color-primary);
 }
 
-.nav-item {
-  text-align: center;
-  height: 70px;
-}
+ @media (max-width: 767px) {
+  .navbar-collapse.show {
+    display: block !important;
+    height: 301px;
+  }
+  
+  .navbar-nav {
+    align-items: center;
+    padding: 8px 0px;
+    width: 100%;
+  }
 
-.navbar-collapse {
-  overflow-y: auto;
-  max-height: calc(100vh - 70px); /* Adjust based on your navbar height */
-}
+  .navbar-nav .nav-item {
+    /* padding: 0rem 0rem; */
+    /* height: 90px; */
+    width: 100%;
+  }
 
-.navbar-collapse.collapse.show .dropdown-menu .dropdown-item {
-  text-align: center;
-  align-items: center; 
-}
+  /* .navbar.shrunk {
+    height: 90px;
+  } */
 
-/* Internal Layout (Icon + Text in a row) */
-.navbar .dropdown-menu > li > div {
-  display: flex;
-  flex-direction: column; /* Keeps Label above the content */
-  padding: 0.75rem 1.5rem;
-  align-items: center;
-  /* margin: 1.2rem 0.9rem 1.2rem 0.9rem !important; */
-  border-bottom: 4px solid #444;
+  .navbar-collapse {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    width: 100%;
+    background-color: var(--phs-color-bg);
+    border-top: 1px solid var(--phs-color-border);
+    border-bottom: 1px solid var(--phs-color-border);
+    box-shadow: 0 12px 4px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    overflow-y: auto !important;
+    height: 301px;
+    z-index: 1040 !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .navbar-nav .nav-link:hover {
+    background-color: var(--phs-color-surface-hover);
+    color: var(--phs-color-primary);
+  }
+
+  .navbar-nav .nav-link.active {
+    background-color: var(--phs-color-primary);
+    color: var(--phs-color-bg);
+  }
+
+  .dropdown-item .dropdown-menu {
+    overflow-y: auto;
+    max-height: 400px;
+  }
+
+  .dropdown-item, .dropdown-menu > li > a {
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
 }
