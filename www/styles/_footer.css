@@ -170,6 +170,7 @@
 }
 
 .phs-footer-row3 .phs-footer-row3-left .ogl-logo {
+  content: var(--phs-ogl-logo-path);
   width: 67px;
   height: auto;
 }

@@ -17,9 +17,9 @@ app_ui = ui.page_navbar(
         ui.TagList(fa.icon_svg("house"), "Home"),
         
         ui.layout_column_wrap(
-            ui.output_ui("kpi_records"),
-            ui.output_ui("kpi_scale"),
-            ui.output_ui("kpi_other")
+            ui.output_ui("kpi_records", class_="phs-kpi-container"),
+            ui.output_ui("kpi_scale", class_="phs-kpi-container"),
+            ui.output_ui("kpi_other", class_="phs-kpi-container")
         ),
         
         # First row: 2 cards side by side
@@ -32,11 +32,11 @@ app_ui = ui.page_navbar(
                         "Year",
                         ui.input_selectize("ddpieyear", "Choose", choices=[] ))
                     ),
-                    ui.output_ui("pietop3"),
+                    ui.output_ui("pietop3", class_="phs-plot-container"),
                     full_screen=True
             ),
             ui.card(ui.card_header("Scatter plot"), 
-                    ui.output_ui("scatterplot"), 
+                    ui.output_ui("scatterplot", class_="phs-plot-container"), 
                     full_screen=True),
             col_widths=[6, 6]
         ),
@@ -50,7 +50,7 @@ app_ui = ui.page_navbar(
                             style="position:absolute; top: 5px; right: 7px;",),
                         "Select a country",
                         ui.input_selectize("ddCountry", "country", choices=[] ))),
-                    ui.output_ui("linecountry"),
+                    ui.output_ui("linecountry", class_="phs-plot-container"),
                     full_screen=True),
             col_widths=[12]
         ),
@@ -65,7 +65,7 @@ app_ui = ui.page_navbar(
                 ui.h3("World Happiness top 10"),
                 ui.input_selectize("byear", "Choose", choices=[])
             ),
-            ui.output_ui("top10_bar")
+            ui.output_ui("top10_bar", class_="phs-plot-container")
         ),
         value="bar_plots"
     ),
@@ -78,7 +78,7 @@ app_ui = ui.page_navbar(
                 ui.h3("Map plot"),
                 ui.input_selectize("mapyear", "Choose", choices=[])
             ),
-            ui.output_ui("happiness_map")
+            ui.output_ui("happiness_map", class_="phs-plot-container")
         ),
         value="geodata"
     ),
@@ -132,11 +132,12 @@ app_ui = ui.page_navbar(
     # Inject Plotly JS globally
     ui.head_content(
         ui.tags.link(rel="icon", href="www/img/phs-logo.svg", type="image/x-icon"),
-        # ui.tags.script(src="https://cdn.plot.ly/plotly-3.3.1.min.js"), # online version
-        ui.tags.script(src="www/js/plotly-3.5.0.min.js"),
-        ui.tags.script(src="www/js/functs.js"),
+        # ui.tags.script(src="https://cdn.plot.ly/plotly-3.6.0.min.js"), # online version
+        ui.tags.script(src="www/js/plotly-3.6.0.min.js"),
+        ui.tags.script(src="www/js/phs-footer.js"),
+        ui.tags.script(src="www/js/phs-router.js"),
         ui.tags.script(src="www/js/phs-thene-mode.js"),
-        # ui.tags.script(src="www/js/_navbar.js"),
+        ui.tags.script(src="www/js/_navbar.js"),
         ui.tags.link(rel="stylesheet", href="www/styles/phs.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_navbar.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_footer.css"),
@@ -148,7 +149,7 @@ app_ui = ui.page_navbar(
         ui.tags.img(class_ = "phs-navbar-logo", alt="PHS logo"), "",
         href = get_phs_url(cfg),
         target = "_blank",
-        class_ = "navbar-brand d-flex align-items-center"
+        class_="navbar-brand"
     ),
     lang="en",
     navbar_options=ui.navbar_options(position="fixed-top"),
@@ -314,7 +315,9 @@ def server(input, output, session):
     @output
     @render.data_frame
     def df_table():
-        return render.DataGrid(my_data.happiness_data, width="fit-content", height=430, filters=True)
+        return render.DataGrid(my_data.happiness_data, 
+                                # width="fit-content", height=430, 
+                                filters=True)
 
     @output
     @render.ui

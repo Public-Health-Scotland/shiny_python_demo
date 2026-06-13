@@ -1,3 +1,12 @@
 shiny-data-frame {
-  --shiny-datagrid-grid-header-bgcolor: var(--phs-data-grid-header-bgcolor) !important;
+  --shiny-datagrid-clear: both;
+  --shiny-datagrid-margin-top: 6px;
+  --shiny-datagrid-margin-bottom: 6px;
+  max-width: none !important;
+  border-collapse: separate !important;
+  --shiny-datagrid-border-spacing: 0px;
+  width: 100% !important;
+  --shiny-datagrid-font-size: 0.9375rem;
+  margin: 0 !important;
+  text-align: right !important;
 }
