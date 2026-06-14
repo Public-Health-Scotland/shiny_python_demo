@@ -2,6 +2,14 @@ import os
 from pathlib import Path
 import json
 
+def get_my_www_folder() -> Path:
+    """This function returns the path to the 'www' folder, 
+    which is located in the parent directory of the current file's directory.
+    Returns:
+        Path: www folder path
+    """
+    return Path(__file__).resolve().parents[1] / 'www'
+
 def phs_config_get(file_path: str) -> dict:
     """Read a JSON file and return its contents as a dictionary.
     Args:

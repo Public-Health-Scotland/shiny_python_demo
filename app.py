@@ -4,7 +4,7 @@ import getpass
 from pathlib import Path
 from data.data_con import DataLoader
 from view.myplots import PlotBuilder
-from helper.functs import phs_config_get, get_social_urls, get_phs_url, get_ogl_url, get_compliance_list
+from helper.functs import phs_config_get, get_social_urls, get_phs_url, get_ogl_url, get_compliance_list, get_my_www_folder
 
 # important settings
 assets_folder = Path(__file__).parent / 'www'
@@ -156,7 +156,7 @@ app_ui = ui.page_navbar(
     footer=ui.tags.footer(
         ui.div(
             ui.div(
-                ui.div("Left content 1", class_ = "phs-footer-row1-left"),
+                ui.div("Shiny Python demo", class_ = "phs-footer-row1-left"),
                 ui.div(
                     *[
                         ui.tags.a(section.get('name_en'), href="#")
@@ -370,4 +370,4 @@ def server(input, output, session):
         plot, descript = myplots.build_linecountry(data, current_theme(), selected_country)
         return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
 
-app = App(app_ui, server, static_assets={"/www": assets_folder})
+app = App(app_ui, server, static_assets={"/www": get_my_www_folder()})
