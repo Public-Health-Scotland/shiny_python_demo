@@ -47,13 +47,20 @@ html[data-bs-theme='light'] {
   --bs-navbar-brand-font-size: 1.25rem;
   --bs-dropdown-item-padding-x: 1rem;
   --bs-dropdown-item-padding-y: 0.25rem;
-  --bs-body-font-family: "Source Sans 3";
+  /* --bs-body-font-family: "Source Sans 3"; */
+  --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --bs-body-font-size: 1rem;
+  --bs-body-font-weight: 400;
+  --bs-body-line-height: 1.5;
   --bs-dropdown-link-active-color: var(--phs-color-primary);
 }
 
 /* give a padding top to the body object */
 body { 
     font-family: var(--bs-body-font-family);
+    font-size: var(--bs-body-font-size);
+    font-weight: var(--bs-body-font-weight);
+    line-height: var(--bs-body-line-height);
     padding: 88px 0px 0px 0px; 
     background-color: var(--phs-color-bg);
     color: var(--phs-color-fg);
@@ -76,7 +83,22 @@ body > .container-fluid .tab-content {
     height: 400px;
 }
 
-.phs-kpi-container {
-    height: 140px;
+.phs-kpi-row {
     background-color: var(--phs-color-footer-bg) !important;
+    min-height: 160px;
+    max-height: 520px;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.phs-kpi-box {
+    background-color: var(--phs-color-bg) !important;
+    align-items: center;
+    justify-content: center;
+    width: 310px;
+    height: 120px;
+    flex-shrink: 0;
+    padding: 0px;
+    margin: 0px;
 }

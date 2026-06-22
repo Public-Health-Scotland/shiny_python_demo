@@ -17,9 +17,10 @@ app_ui = ui.page_navbar(
         ui.TagList(fa.icon_svg("house"), "Home"),
         
         ui.layout_column_wrap(
-            ui.output_ui("kpi_records", class_="phs-kpi-container"),
-            ui.output_ui("kpi_scale", class_="phs-kpi-container"),
-            ui.output_ui("kpi_other", class_="phs-kpi-container")
+            ui.output_ui("kpi_records"),
+            ui.output_ui("kpi_scale"),
+            ui.output_ui("kpi_other"),
+            class_="phs-kpi-row"
         ),
         
         # First row: 2 cards side by side
@@ -204,7 +205,7 @@ app_ui = ui.page_navbar(
         role="contentinfo"
     ),
     id="selected_tab",
-    window_title="World happyness"
+    window_title="World Happiness"
 )
 
 def server(input, output, session):
@@ -280,11 +281,11 @@ def server(input, output, session):
                         f"/{current}", class_ = "span_current",
                         style=f"color:{my_kpi_color};"
                     ),
-                    # ui.span(f"{mydata.last_date}", class_ = "span_week")
                 ),
                 ui.div("(Historical / Current)", class_ = "div_hist_curr")
             ),
-            showcase=fa.icon_svg(icon_name, fill=f"{my_kpi_color} !important")
+            showcase=fa.icon_svg(icon_name, fill=f"{my_kpi_color} !important"),
+            class_="phs-kpi-box",
         )
 
     @output
