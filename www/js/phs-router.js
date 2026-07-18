@@ -1,9 +1,15 @@
-// Function to handle the URL hash on page load
-function syncHashToShiny() {
-    const currentHash = window.location.hash.replace('#', '');
-    if (currentHash) {
-        // Send the hash value back to Python Shiny
-        Shiny.setInputValue('initial_hash', currentHash);
+// Read hash on load and activate correct tab
+function activateTabFromHash() {
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+
+    const link = document.querySelector(`a[data-value="${hash}"]`);
+    if (link) {
+        link.click();
+        // Scroll after tab activation
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
     }
 }
 
@@ -23,18 +29,32 @@ function closeDropdownMenu() {
   }
 }
 
-// Update the hash whenever the user changes tabs
-Shiny.addCustomMessageHandler('update_hash', function(hash_value) {
-  window.location.hash = hash_value;
-  closeDropdownMenu();
+// When Python Shiny sends a message → update hash + scroll
+Shiny.addCustomMessageHandler("update_hash", function(value) {
+    window.location.hash = value;
+    closeDropdownMenu();
+    requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+});
+
+// When user clicks a tab → update hash + scroll
+document.addEventListener("click", function(e) {
+    const link = e.target.closest("a[data-value]");
+    if (link) {
+        const value = link.getAttribute("data-value");
+        window.location.hash = value;
+
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
 });
 
 // Close menu when hash changes via back/forward buttons
-window.addEventListener('hashchange', function() {
-    closeDropdownMenu();
-});
+window.addEventListener('hashchange', closeDropdownMenu);
 
-// Run once when the document is ready
-$(document).on('shiny:connected', function(event) {
-  syncHashToShiny();
+// Run once when Shiny is ready
+$(document).on("shiny:connected", function() {
+    activateTabFromHash();
 });

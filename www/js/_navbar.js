@@ -1,4 +1,4 @@
-function closeDropdownMenu() {
+function closeMenu() {
   console.log('Try to hide dropdown...');
 
   const dropdownToggle = document.querySelector('.dropdown-toggle');
@@ -34,19 +34,6 @@ document.addEventListener('click', function(event) {
   console.log('Triggered click...');
   const navItem = event.target.closest('.nav-item');
   if (navItem && !navItem.classList.contains('dropdown')) {
-    closeDropdownMenu();
+    closeMenu();
   }
 });
-
-// Change navbar height variable based on scroll position
-// window.addEventListener("scroll", function () {
-//   const root = document.documentElement;
-
-//   if (window.scrollY > 50) {
-//     // Switch to scrolled height
-//     root.style.setProperty("--navbar-height", "var(--navbar-height-scrolled)");
-//   } else {
-//     // Switch back to normal height
-//     root.style.setProperty("--navbar-height", "var(--navbar-height-default)");
-//   }
-// });

@@ -222,12 +222,6 @@ def server(input, output, session):
         tab = input.selected_tab()
         await session.send_custom_message("update_hash", tab)
 
-    @reactive.effect
-    @reactive.event(input.initial_hash)
-    def _():
-        # React to the initial hash sent from JS
-        ui.update_navset("selected_tab", selected=input.initial_hash())
-
     @output
     @render.text
     async def welcome():
