@@ -216,8 +216,7 @@ def server(input, output, session):
     kpi_cache = reactive.Value(None)  # cache KPI stats after load
 
     @reactive.effect
-    @reactive.event(input.selected_tab)
-    async def _():
+    async def _sync_tab_hash():
         # Add tab value to the URL
         tab = input.selected_tab()
         await session.send_custom_message("update_hash", tab)

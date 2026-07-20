@@ -1,60 +1,73 @@
-// Read hash on load and activate correct tab
-function activateTabFromHash() {
-    const hash = window.location.hash.slice(1);
-    if (!hash) return;
+// Prevent loops between hashchange and tab clicks
+let suppressHashHandler = false;
 
-    const link = document.querySelector(`a[data-value="${hash}"]`);
-    if (link) {
-        link.click();
-        // Scroll after tab activation
-        requestAnimationFrame(() => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        });
-    }
-}
-
-// Close dropdown menu when hash changes
+// Close all dropdown menus via Bootstrap
 function closeDropdownMenu() {
-  const dropdownToggle = document.querySelector('.dropdown-toggle');  
-  if (dropdownToggle) {
-    // Remove Bootstrap's "show" class
-    dropdownToggle.classList.remove('show');
-    dropdownToggle.setAttribute('aria-expanded', 'false');
-    
-    // Also hide the dropdown menu
-    const dropdownMenu = dropdownToggle.nextElementSibling;
-    if (dropdownMenu && dropdownMenu.classList.contains('dropdown-menu')) {
-      dropdownMenu.classList.remove('show');
-    }
-  }
+  document.querySelectorAll(".dropdown-toggle").forEach(toggle => {
+    let dropdown = bootstrap.Dropdown.getInstance(toggle);
+    if (!dropdown) dropdown = new bootstrap.Dropdown(toggle);
+    dropdown.hide();
+  });
 }
 
-// When Python Shiny sends a message → update hash + scroll
-Shiny.addCustomMessageHandler("update_hash", function(value) {
-    window.location.hash = value;
-    closeDropdownMenu();
-    requestAnimationFrame(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+// Common handler for "tab changed"
+function handleTabChange(value) {
+  if (!value) return;
+
+  suppressHashHandler = true;
+  window.location.hash = value;
+  closeDropdownMenu();
+
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  setTimeout(() => (suppressHashHandler = false), 50);
+}
+
+// Activate tab based on current hash
+function activateTabFromHash() {
+  const hash = window.location.hash.slice(1);
+  if (!hash) return;
+
+  const link = document.querySelector(
+    `[data-value="${hash}"], .dropdown-menu [data-value="${hash}"]`
+  );
+  if (!link) return;
+
+  suppressHashHandler = true;
+  link.click();
+  closeDropdownMenu();
+
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  setTimeout(() => (suppressHashHandler = false), 50);
+}
+
+// From Python: sync hash when selected_tab changes
+Shiny.addCustomMessageHandler("update_hash", handleTabChange);
+
+// User clicks a tab
+document.addEventListener("click", function (e) {
+  // Let Bootstrap handle opening the dropdown menu
+  if (e.target.closest(".dropdown-toggle")) return;
+
+  const link = e.target.closest("[data-value]");
+  if (!link) return;
+
+  const value = link.getAttribute("data-value");
+  handleTabChange(value);
 });
 
-// When user clicks a tab → update hash + scroll
-document.addEventListener("click", function(e) {
-    const link = e.target.closest("a[data-value]");
-    if (link) {
-        const value = link.getAttribute("data-value");
-        window.location.hash = value;
-
-        requestAnimationFrame(() => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        });
-    }
+// Browser back/forward
+window.addEventListener("hashchange", function () {
+  if (suppressHashHandler) return;
+  activateTabFromHash();
 });
 
-// Close menu when hash changes via back/forward buttons
-window.addEventListener('hashchange', closeDropdownMenu);
-
-// Run once when Shiny is ready
-$(document).on("shiny:connected", function() {
-    activateTabFromHash();
+// On initial connect: honor hash if present
+$(document).on("shiny:connected", function () {
+  activateTabFromHash();
 });
