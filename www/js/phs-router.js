@@ -1,6 +1,16 @@
 // Prevent loops between hashchange and tab clicks
 let suppressHashHandler = false;
 
+function closeMobileMenu() {
+  const mobileMenu = document.querySelector(".navbar-collapse.show");
+  if (mobileMenu) {
+    const bsCollapse = bootstrap.Collapse.getInstance(mobileMenu);
+    if (bsCollapse) {
+      bsCollapse.hide();
+    }
+  }
+}
+
 // Close all dropdown menus via Bootstrap
 function closeDropdownMenu() {
   document.querySelectorAll(".dropdown-toggle").forEach(toggle => {
@@ -17,6 +27,7 @@ function handleTabChange(value) {
   suppressHashHandler = true;
   window.location.hash = value;
   closeDropdownMenu();
+  closeMobileMenu();
 
   requestAnimationFrame(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });

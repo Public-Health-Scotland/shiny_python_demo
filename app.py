@@ -138,7 +138,6 @@ app_ui = ui.page_navbar(
         ui.tags.script(src="www/js/phs-footer.js"),
         ui.tags.script(src="www/js/phs-router.js"),
         ui.tags.script(src="www/js/phs-thene-mode.js"),
-        ui.tags.script(src="www/js/_navbar.js"),
         ui.tags.link(rel="stylesheet", href="www/styles/phs.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_navbar.css"),
         ui.tags.link(rel="stylesheet", href="www/styles/_footer.css"),
