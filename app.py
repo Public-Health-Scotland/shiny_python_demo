@@ -133,8 +133,8 @@ app_ui = ui.page_navbar(
     # Inject Plotly JS globally
     ui.head_content(
         ui.tags.link(rel="icon", href="www/img/phs-logo.svg", type="image/x-icon"),
-        # ui.tags.script(src="https://cdn.plot.ly/plotly-3.6.0.min.js"), # online version
-        ui.tags.script(src="www/js/plotly-3.6.0.min.js"),
+        # ui.tags.script(src="https://cdn.plot.ly/plotly-3.7.0.min.js"), # online version
+        ui.tags.script(src="www/js/plotly-3.7.0.min.js"),
         ui.tags.script(src="www/js/phs-footer.js"),
         ui.tags.script(src="www/js/phs-router.js"),
         ui.tags.script(src="www/js/phs-thene-mode.js"),
