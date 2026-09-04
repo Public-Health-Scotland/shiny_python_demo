@@ -6,8 +6,9 @@ import duckdb
 
 class DataLoader:
     def __init__(self):
+        load_dotenv()
         # This is the file path to the data
-        self.path: str = 'data/WHR2024.csv'
+        # self.path: str = 'data/WHR2024.csv'
         self.DUCKD_DIR: str = "data/encrypted_data.duckdb"
         # Ensure we load at least the columns we need for the app
         self.COLUMNS = [
@@ -32,20 +33,19 @@ class DataLoader:
         #     usecols=self.COLUMNS,
         # )
         # DuckDB file
-        self.happiness_data = await self.get_data_duckdb('SELECT Year, "Country name", "Ladder score", "Explained by: Log GDP per capita" FROM my_table')
+        self.happiness_data = await self.get_data_duckdb('SELECT Year, "Country name", "Ladder score", "Explained by: Log GDP per capita" FROM whr2024')
 
         self.country_list = self.happiness_data["Country name"].unique().tolist()
         self.dict_years = {str(year): str(year) for year in sorted(self.happiness_data['Year'].unique())}
         return self.happiness_data
 
-    # It runs duckdb calls on a thread (duckdb is synchronous and not awaitable).
+    # It runs duckdb calls on a thread
     async def get_data_duckdb(self, query: str) -> pd.DataFrame:
         def _run_query():
             # Start in-memory DuckDB
             con = duckdb.connect()
             # Attach encrypted database
             con.execute(f"""
-                INSTALL httpfs;
                 LOAD httpfs;
                 ATTACH '{self.DUCKD_DIR}' AS enc (
                     READ_ONLY,

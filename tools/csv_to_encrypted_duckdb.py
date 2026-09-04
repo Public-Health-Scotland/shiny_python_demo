@@ -13,7 +13,6 @@ con = duckdb.connect()
 
 # Attach encrypted database
 con.execute(f"""
-    INSTALL httpfs;
     LOAD httpfs;
     ATTACH '{db_path}' AS enc (
         ENCRYPTION_KEY '{encryption_key}',
@@ -24,7 +23,7 @@ con.execute(f"""
 
 # Import CSV
 con.execute(f"""
-    CREATE TABLE beds AS
+    CREATE TABLE whr2024 AS
     SELECT *
     FROM read_csv_auto('{csv_path}');
 """)
@@ -38,6 +37,7 @@ con = duckdb.connect()
 
 # attach encrypted duckdb file but read only
 con.execute(f"""
+    LOAD httpfs;
     ATTACH '{db_path}' AS enc (
         READ_ONLY,
         ENCRYPTION_KEY '{encryption_key}',
@@ -46,7 +46,7 @@ con.execute(f"""
     USE enc;
 """)
 
-df = con.execute('SELECT Year, "Country name", "Ladder score", "Explained by: Log GDP per capita" FROM my_table').fetchdf()
+df = con.execute('SELECT Year, "Country name", "Ladder score", "Explained by: Log GDP per capita" FROM whr2024').fetchdf()
 
 con.close()
 

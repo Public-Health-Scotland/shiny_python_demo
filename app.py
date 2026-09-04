@@ -92,7 +92,7 @@ app_ui = ui.page_navbar(
                 ui.span("User:"),
                 ui.div(
                     fa.icon_svg("person-circle-check"),
-                    ui.output_text("welcome", inline=True)
+                    ui.output_text("welcome", inline=True), class_="user-email"
                 )
             )
         ),
@@ -208,6 +208,7 @@ app_ui = ui.page_navbar(
 )
 
 def server(input, output, session):
+    username = session.user or getpass.getuser()
     my_data = DataLoader()
     myplots = PlotBuilder()
 
@@ -223,11 +224,7 @@ def server(input, output, session):
     @output
     @render.text
     async def welcome():
-        # get current user
-        user_name = session.user
-        if user_name is None:
-            user_name = getpass.getuser()
-        return user_name
+        return username
 
     # @reactive.effect
     # async def _expire_session():

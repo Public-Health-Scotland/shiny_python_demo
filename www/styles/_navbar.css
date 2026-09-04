@@ -40,6 +40,15 @@
   left: auto !important;
 }
 
+.user-email {
+    display: inline-flex;
+    padding-left: 25px;
+    padding-right: 25px;
+    text-align: center;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
 .navbar .dropdown-menu > li {
     padding: 1rem 1rem !important; /* Increases vertical thickness */
     min-height: auto !important; /* REMOVED the 3rem trap */
