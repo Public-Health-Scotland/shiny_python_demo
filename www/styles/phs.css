@@ -104,12 +104,9 @@ body > .container-fluid .tab-content {
 }
 
 /* Change highlight color when selecting an option */
-.selectize-dropdown .option.active {
-    background-color: var(--phs-color-primary) !important;
-    color: var(--phs-color-bg) !important;
-}
-
-.selectize-dropdown .option:hover {
+.selectize-dropdown .option.active,
+.selectize-dropdown .option:hover,
+.selectize-dropdown .selected {
     background-color: var(--phs-color-primary) !important;
     color: var(--phs-color-bg) !important;
 }

@@ -1,4 +1,4 @@
-.navbar {
+heig.navbar {
   background-color: var(--phs-color-navbar-bg);
   border-bottom: 1px solid var(--phs-color-navbar-border) !important;
   height: var(--navbar-height);
@@ -81,7 +81,22 @@
   background-color: var(--phs-color-primary) !important;
 }
 
- @media (max-width: 767px) {
+.navbar .nav-underline .nav-link, 
+.navbar .nav-underline :where(ul.nav.navbar-nav > li)>a, 
+.navbar .nav-underline .nav-tabs>li>a, 
+.navbar .nav-underline .nav-pills>li>a
+.navbar .nav-underline .nav-link, 
+.navbar .nav-underline :where(ul.nav.navbar-nav > li)>a, 
+.navbar .nav-underline .nav-tabs>li>a, 
+.navbar .nav-underline .nav-pills>li>a {
+  margin-bottom: 0px;
+}
+
+@media (max-width: 767px) {
+  .navbar {
+    background-color: var(--phs-color-bg) !important;
+  }
+
   .navbar-collapse.show {
     display: block !important;
     height: 301px;
@@ -94,21 +109,15 @@
   }
 
   .navbar-nav .nav-item {
-    /* padding: 0rem 0rem; */
-    /* height: 90px; */
     width: 100%;
   }
-
-  /* .navbar.shrunk {
-    height: 90px;
-  } */
 
   .navbar-collapse {
     position: fixed;
     top: var(--navbar-height);
     left: 0;
     width: 100%;
-    background-color: var(--phs-color-bg);
+    background-color: var(--phs-color-bg) !important;
     border-top: 1px solid var(--phs-color-border);
     border-bottom: 1px solid var(--phs-color-border);
     box-shadow: 0 12px 4px rgba(0, 0, 0, 0.15);
@@ -119,14 +128,10 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  .navbar-nav .nav-link:hover {
-    background-color: var(--phs-color-surface-hover);
-    color: var(--phs-color-primary);
-  }
-
+  .navbar-nav .nav-link:hover,
   .navbar-nav .nav-link.active {
-    background-color: var(--phs-color-primary);
-    color: var(--phs-color-bg);
+    background-color: var(--phs-color-primary) !important;
+    color: var(--phs-color-bg) !important;
   }
 
   .dropdown-item .dropdown-menu {
