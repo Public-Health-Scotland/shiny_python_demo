@@ -1,12 +1,12 @@
-import pandas as pd
 import asyncio
-from dotenv import load_dotenv # comment out when deploying
 import os
 import duckdb
+import pandas as pd
+from dotenv import load_dotenv  # comment out when deploying
 
 class DataLoader:
     def __init__(self):
-        load_dotenv()
+        load_dotenv() # comment out when deploying
         # This is the file path to the data
         # self.path: str = 'data/WHR2024.csv'
         self.DUCKD_DIR: str = "data/encrypted_data.duckdb"
@@ -46,6 +46,7 @@ class DataLoader:
             con = duckdb.connect()
             # Attach encrypted database
             con.execute(f"""
+                INSTALL httpfs;
                 LOAD httpfs;
                 ATTACH '{self.DUCKD_DIR}' AS enc (
                     READ_ONLY,

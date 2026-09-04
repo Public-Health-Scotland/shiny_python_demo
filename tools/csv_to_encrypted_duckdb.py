@@ -13,6 +13,7 @@ con = duckdb.connect()
 
 # Attach encrypted database
 con.execute(f"""
+    INSTALL httpfs;
     LOAD httpfs;
     ATTACH '{db_path}' AS enc (
         ENCRYPTION_KEY '{encryption_key}',
@@ -37,6 +38,7 @@ con = duckdb.connect()
 
 # attach encrypted duckdb file but read only
 con.execute(f"""
+    INSTALL httpfs;
     LOAD httpfs;
     ATTACH '{db_path}' AS enc (
         READ_ONLY,
