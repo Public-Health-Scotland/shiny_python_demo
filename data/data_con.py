@@ -3,6 +3,7 @@ import asyncio
 from dotenv import load_dotenv # comment out when deploying
 import os
 import duckdb
+
 class DataLoader:
     def __init__(self):
         # This is the file path to the data
@@ -40,7 +41,19 @@ class DataLoader:
     # It runs duckdb calls on a thread (duckdb is synchronous and not awaitable).
     async def get_data_duckdb(self, query: str) -> pd.DataFrame:
         def _run_query():
-            con = duckdb.connect(self.DUCKD_DIR, read_only=True, config={"password": str(os.getenv('PWD'))})
+            # Start in-memory DuckDB
+            con = duckdb.connect()
+            # Attach encrypted database
+            con.execute(f"""
+                INSTALL httpfs;
+                LOAD httpfs;
+                ATTACH '{self.DUCKD_DIR}' AS enc (
+                    READ_ONLY,
+                    ENCRYPTION_KEY '{str(os.getenv('DUCKDB_KEY'))}',
+                    ENCRYPTION_CIPHER 'GCM'
+                );
+                USE enc;
+            """)
             try:
                 df = con.execute(query).fetchdf()  # synchronous call returning pandas DataFrame
             finally:

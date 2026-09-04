@@ -4,28 +4,51 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Define your file paths and encryption key
 csv_path = "data/WHR2024.csv"
 db_path = "data/encrypted_data.duckdb"
-encryption_key = str(os.getenv('PWD'))
+encryption_key = os.getenv("DUCKDB_KEY")
 
-# Create an encrypted database
-con = duckdb.connect(db_path, config={"password": encryption_key})
+# Start in-memory DuckDB
+con = duckdb.connect()
 
-# 2. Import the CSV file into an encrypted table within the attached database
+# Attach encrypted database
 con.execute(f"""
-    CREATE TABLE my_table AS 
-    SELECT * FROM read_csv_auto('{csv_path}');
+    INSTALL httpfs;
+    LOAD httpfs;
+    ATTACH '{db_path}' AS enc (
+        ENCRYPTION_KEY '{encryption_key}',
+        ENCRYPTION_CIPHER 'GCM'
+    );
+    USE enc;
 """)
 
-print("Successfully created encrypted DuckDB file and imported CSV data.")
+# Import CSV
+con.execute(f"""
+    CREATE TABLE beds AS
+    SELECT *
+    FROM read_csv_auto('{csv_path}');
+""")
 
-# Close the connection
+print("Successfully created encrypted DuckDB file and imported data.")
+
 con.close()
 
-# test data
-con = duckdb.connect(db_path, read_only=True, config={"password": encryption_key})
+# Open DuckDB with no file
+con = duckdb.connect()
+
+# attach encrypted duckdb file but read only
+con.execute(f"""
+    ATTACH '{db_path}' AS enc (
+        READ_ONLY,
+        ENCRYPTION_KEY '{encryption_key}',
+        ENCRYPTION_CIPHER 'GCM'
+    );
+    USE enc;
+""")
+
 df = con.execute('SELECT Year, "Country name", "Ladder score", "Explained by: Log GDP per capita" FROM my_table').fetchdf()
+
 con.close()
-print(df.dtypes)
+
 print(df)
+print(df.dtypes)
