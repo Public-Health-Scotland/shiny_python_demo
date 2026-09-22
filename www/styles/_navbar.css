@@ -1,4 +1,4 @@
-heig.navbar {
+navbar {
   background-color: var(--phs-color-navbar-bg);
   border-bottom: 1px solid var(--phs-color-navbar-border) !important;
   height: var(--navbar-height);

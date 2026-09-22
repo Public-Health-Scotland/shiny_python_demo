@@ -14,8 +14,7 @@ cfg = phs_config_get(assets_folder / "config" / "default-config.json")
 app_ui = ui.page_navbar(
     ui.nav_panel(
         # Name and icon
-        ui.TagList(fa.icon_svg("house"), "Home"),
-        
+        ui.span(fa.icon_svg("house"), "Home"),
         ui.layout_column_wrap(
             ui.output_ui("kpi_records"),
             ui.output_ui("kpi_scale"),
@@ -59,7 +58,7 @@ app_ui = ui.page_navbar(
     ),
     ui.nav_panel(
         # Name and icon
-        ui.TagList(fa.icon_svg("chart-line"), "Bar plot"),
+        ui.span(fa.icon_svg("chart-line"), "Bar plot"),
 
         ui.layout_sidebar(
             ui.sidebar(
@@ -72,7 +71,7 @@ app_ui = ui.page_navbar(
     ),
     ui.nav_panel(
         # Name and icon
-        ui.TagList(fa.icon_svg("map"), "Geodata"),
+        ui.span(fa.icon_svg("map"), "Geodata"),
 
         ui.layout_sidebar(
             ui.sidebar(
@@ -86,7 +85,7 @@ app_ui = ui.page_navbar(
     ui.nav_spacer(),
     ui.nav_menu(
         # Name and icon
-        ui.TagList(fa.icon_svg("ellipsis"), "More"),
+        ui.span(fa.icon_svg("ellipsis"), "More"),
         ui.nav_control(
             ui.div(
                 ui.span("User:"),
@@ -107,7 +106,7 @@ app_ui = ui.page_navbar(
         ),
         ui.nav_panel(
             # Name and icon
-            ui.TagList(fa.icon_svg("database"), "Database"),
+            ui.span(fa.icon_svg("database"), "Database"),
             ui.layout_columns(
                 ui.card(ui.card_header("happiness data"),
                         ui.output_data_frame("df_table"),
@@ -119,13 +118,13 @@ app_ui = ui.page_navbar(
         ),
         ui.nav_panel(
             # Name and icon
-            ui.TagList(fa.icon_svg("codepen"), "Contact"),
+            ui.span(fa.icon_svg("codepen"), "Contact"),
             ui.h2("Contact us"),
             value="contact"
         ),
         ui.nav_panel(
             # Name and icon
-            ui.TagList(fa.icon_svg("people-carry-box"), "Help"),
+            ui.span(fa.icon_svg("people-carry-box"), "Help"),
             ui.h2("Help Page"),
             value="help"
         )
@@ -133,8 +132,8 @@ app_ui = ui.page_navbar(
     # Inject Plotly JS globally
     ui.head_content(
         ui.tags.link(rel="icon", href="www/img/phs-logo.svg", type="image/x-icon"),
-        # ui.tags.script(src="https://cdn.plot.ly/plotly-3.7.0.min.js"), # online version
-        ui.tags.script(src="www/js/plotly-3.7.0.min.js"),
+        # ui.tags.script(src="https://cdn.plot.ly/plotly-4.1.1.min.js"), # online version
+        ui.tags.script(src="www/js/plotly-4.1.1.min.js"),
         ui.tags.script(src="www/js/phs-footer.js"),
         ui.tags.script(src="www/js/phs-router.js"),
         ui.tags.script(src="www/js/phs-thene-mode.js"),
