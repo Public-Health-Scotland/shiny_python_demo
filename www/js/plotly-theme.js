@@ -77,6 +77,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Clean trace data so colorway is enforced
         const cleanedData = cleanTraceColors(plotData.data);
+        // Apply ARIA accessibility attributes to the container
+        if (plotData["aria-label"]) {
+            plotContainer.setAttribute("role", "img");
+            plotContainer.setAttribute("aria-label", plotData["aria-label"]);
+            plotContainer.setAttribute("tabindex", "0");
+        }
 
         Plotly.react(plotContainer, cleanedData, layout, plotData.config || {});
     }
