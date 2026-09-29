@@ -55,6 +55,22 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    function ensureResponsiveObserver(targetId, plotContainer) {
+        if (plotContainer.dataset.resizeObserverBound === "true") return;
+
+        if (typeof ResizeObserver !== "undefined") {
+            const resizeObserver = new ResizeObserver(() => {
+                if (document.getElementById(targetId) && window.Plotly) {
+                    Plotly.Plots.resize(plotContainer);
+                }
+            });
+
+            resizeObserver.observe(plotContainer);
+            plotContainer.dataset.resizeObserverBound = "true";
+            plotContainer._plotlyResizeObserver = resizeObserver;
+        }
+    }
+
     // Render or update a single plot element
     function renderPlot(targetId) {
         const plotContainer = document.getElementById(targetId);
@@ -63,9 +79,10 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!plotContainer || !plotData || !window.Plotly) return;
 
         const theme = getThemeParams();
-        
+
         // Deep clone layout to prevent in-place mutation issues
         const layout = JSON.parse(JSON.stringify(plotData.layout || {}));
+        layout.autosize = true;
 
         // Apply theme settings
         layout.template = theme.template;
@@ -77,6 +94,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Clean trace data so colorway is enforced
         const cleanedData = cleanTraceColors(plotData.data);
+        const config = {
+            ...(plotData.config || {}),
+            responsive: true,
+            displayModeBar: false
+        };
+
         // Apply ARIA accessibility attributes to the container
         if (plotData["aria-label"]) {
             plotContainer.setAttribute("role", "img");
@@ -84,7 +107,8 @@ document.addEventListener("DOMContentLoaded", function() {
             plotContainer.setAttribute("tabindex", "0");
         }
 
-        Plotly.react(plotContainer, cleanedData, layout, plotData.config || {});
+        Plotly.react(plotContainer, cleanedData, layout, config);
+        ensureResponsiveObserver(targetId, plotContainer);
     }
 
     // Re-theme ALL registered plots client-side instantly
