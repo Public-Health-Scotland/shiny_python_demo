@@ -32,11 +32,11 @@ app_ui = ui.page_navbar(
                         "Year",
                         ui.input_selectize("ddpieyear", "Choose", choices=[] ))
                     ),
-                    ui.output_ui("pietop3", class_="phs-plot-container"),
+                    ui.div(id="pietop3", class_="phs-plot-container"),
                     full_screen=True
             ),
             ui.card(ui.card_header("Scatter plot"), 
-                    ui.output_ui("scatterplot", class_="phs-plot-container"), 
+                    ui.div(id="scatterplot", class_="phs-plot-container"), 
                     full_screen=True),
             col_widths=[6, 6]
         ),
@@ -50,7 +50,7 @@ app_ui = ui.page_navbar(
                             style="position:absolute; top: 5px; right: 7px;",),
                         "Select a country",
                         ui.input_selectize("ddCountry", "country", choices=[] ))),
-                    ui.output_ui("linecountry", class_="phs-plot-container"),
+                    ui.div(id="linecountry", class_="phs-plot-container"),
                     full_screen=True),
             col_widths=[12]
         ),
@@ -65,7 +65,7 @@ app_ui = ui.page_navbar(
                 ui.h3("World Happiness top 10"),
                 ui.input_selectize("byear", "Choose", choices=[])
             ),
-            ui.output_ui("top10_bar", class_="phs-plot-container")
+            ui.div(id="top10_bar", class_="phs-plot-container")
         ),
         value="bar_plots"
     ),
@@ -78,7 +78,7 @@ app_ui = ui.page_navbar(
                 ui.h3("Map plot"),
                 ui.input_selectize("mapyear", "Choose", choices=[])
             ),
-            ui.output_ui("happiness_map", class_="phs-plot-container")
+            ui.div(id="happiness_map", class_="phs-plot-container")
         ),
         value="geodata"
     ),
@@ -134,6 +134,7 @@ app_ui = ui.page_navbar(
         ui.tags.link(rel="icon", href="www/img/phs-logo.svg", type="image/x-icon"),
         # ui.tags.script(src="https://cdn.plot.ly/plotly-4.1.1.min.js"), # online version
         ui.tags.script(src="www/js/plotly-4.1.1.min.js"),
+        ui.tags.script(src="www/js/plotly-theme.js"),
         ui.tags.script(src="www/js/phs-footer.js"),
         ui.tags.script(src="www/js/phs-router.js"),
         ui.tags.script(src="www/js/phs-thene-mode.js"),
@@ -211,8 +212,8 @@ def server(input, output, session):
     my_data = DataLoader()
     myplots = PlotBuilder()
 
-    df_val = reactive.Value(None)
     kpi_cache = reactive.Value(None)  # cache KPI stats after load
+    # session.on_ended(my_data.close)
 
     @reactive.effect
     async def _sync_tab_hash():
@@ -233,8 +234,7 @@ def server(input, output, session):
     # Load data ONCE at session start
     @reactive.effect
     async def _load_data():
-        df = await my_data.load_data()
-        df_val.set(df)
+        await my_data.load_data()
         
         # Cache KPI values once
         kpi_cache.set({
@@ -252,11 +252,6 @@ def server(input, output, session):
         ui.update_selectize("ddpieyear", choices=my_data.dict_years)
         ui.update_selectize("ddCountry", choices=my_data.country_list)
 
-    @reactive.Calc
-    def current_theme():
-        template = "plotly_dark" if input.theme_mode() == "dark" else "ggplot2"
-        return template
-    
     def kpi_value_box(title: str, icon_name: str, message: str, current: float, historical: float):
         # get colour for your icon and current value
         my_kpi_color = "#9B4393"
@@ -308,55 +303,55 @@ def server(input, output, session):
                                 # width="fit-content", height=430, 
                                 filters=True)
 
-    @output
-    @render.ui
+    async def send_plotly(output_id: str, chart_dict, description: str):
+        """Send a Plotly figure to a target HTML container for rendering."""
+        chart_dict["target"] = output_id
+        if description:
+            chart_dict["aria-label"] = description
+        await session.send_custom_message("render_plotly_chart", chart_dict)
+
+    @reactive.Effect
     async def top10_bar():
         if not input.byear():  # guard against empty
             return
         year = int(input.byear())
         data = await my_data.get_top_happiest_countries(year, 10)
-        plot, descript = myplots.build_top10_bar(data, current_theme(), year)
-        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
+        plot, descript = myplots.build_top10_bar(data, year)
+        await send_plotly("top10_bar", plot, descript)
 
-    @output
-    @render.ui
+    @reactive.Effect
     async def happiness_map():
         if not input.mapyear():
             return
         year = int(input.mapyear())
         data = await my_data.get_data_by_year(year)
-        plot, descript = myplots.build_happiness_map(data, current_theme(), year)
-        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
+        plot, descript = myplots.build_happiness_map(data, year)
+        await send_plotly("happiness_map", plot, descript)
 
-    @output
-    @render.ui
+    @reactive.Effect
     async def pietop3():
         if not input.ddpieyear():
             return
-        # 
-        
         year = int(input.ddpieyear())
         data = await my_data.get_top_happiest_countries(year=year, top=3)
-        plot, descript = myplots.build_pietop3(data, current_theme(), year, 3)
-        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
+        plot, descript = myplots.build_pietop3(data, year, 3)
+        await send_plotly("pietop3", plot, descript)
 
-    @output
-    @render.ui
+    @reactive.Effect
     async def scatterplot():
         if my_data.happiness_data is None:  # guard until data loaded
             return
         data = await my_data.get_clean_data_for_scatter()
-        plot, descript = myplots.build_scatterplot(data, current_theme())
-        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
+        plot, descript = myplots.build_scatterplot(data)
+        await send_plotly("scatterplot", plot, descript)
 
-    @output
-    @render.ui
+    @reactive.Effect
     async def linecountry():
         if not input.ddCountry():
             return
         selected_country = input.ddCountry()
         data = await my_data.get_data_by_country(selected_country)
-        plot, descript = myplots.build_linecountry(data, current_theme(), selected_country)
-        return ui.tags.div(ui.HTML(plot), aria_label=descript, role="img")
+        plot, descript = myplots.build_linecountry(data, selected_country)
+        await send_plotly("linecountry", plot, descript)
 
 app = App(app_ui, server, static_assets={"/www": get_my_www_folder()})

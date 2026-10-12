@@ -10,6 +10,11 @@ document.addEventListener("DOMContentLoaded", function() {
             colorway: [
                 "#0078D4", "#C73918", "#1E7F84", "#9B4393", "#3393DD",
                 "#6B5C85", "#AF69A9", "#3F3685", "#948DA3", "#655E9D"
+            ],
+            mapColorscale: [
+                [0, "#2d1745"],
+                [0.5, "#9B4393"],
+                [1, "#f0d7ec"]
             ]
         },
         phs_ggplot2: {
@@ -18,6 +23,11 @@ document.addEventListener("DOMContentLoaded", function() {
             colorway: [
                 "#3F3685", "#C73918", "#1E7F84", "#3393DD", "#9B4393",
                 "#0078D4", "#AF69A9", "#6B5C85", "#948DA3", "#655E9D"
+            ],
+            mapColorscale: [
+                [0, "#f1eef6"],
+                [0.5, "#9B4393"],
+                [1, "#3F3685"]
             ]
         }
     };
@@ -84,6 +94,15 @@ document.addEventListener("DOMContentLoaded", function() {
         const layout = JSON.parse(JSON.stringify(plotData.layout || {}));
         layout.autosize = true;
 
+        // FIX: Set chart margins (top, bottom, left, right)
+        layout.margin = {
+            t: 40,
+            b: 65,
+            l: 65,
+            r: 65,
+            ...(layout.margin || {}) // Merges with any layout.margin sent from Python if present
+        };
+
         // Apply theme settings
         layout.template = theme.template;
         layout.paper_bgcolor = theme.bg;
@@ -92,19 +111,41 @@ document.addEventListener("DOMContentLoaded", function() {
         layout.font.color = theme.fontColor;
         layout.colorway = theme.colorway;
 
+        // Choropleth maps require geo background styling to change colors properly
+        if (layout.geo) {
+            layout.geo.bgcolor = theme.bg;
+        }
+
+        // Also handle mapbox just in case your choropleth uses mapbox styling
+        if (layout.mapbox) {
+            layout.mapbox.style = isDarkThemeBg(theme.bg) ? "dark" : "light";
+        }
+
         // Clean trace data so colorway is enforced
         const cleanedData = cleanTraceColors(plotData.data);
         const config = {
             ...(plotData.config || {}),
             responsive: true,
-            displayModeBar: false
+            displayModeBar: true,
+            displaylogo: false
         };
+
+        cleanedData.forEach(trace => {
+            if (trace.type !== "choropleth") return;
+
+            if (trace.coloraxis) {
+                const colorAxis = layout[trace.coloraxis] || {};
+                colorAxis.colorscale = theme.mapColorscale;
+                layout[trace.coloraxis] = colorAxis;
+            } else {
+                trace.colorscale = theme.mapColorscale;
+            }
+        });
 
         // Apply ARIA accessibility attributes to the container
         if (plotData["aria-label"]) {
             plotContainer.setAttribute("role", "img");
             plotContainer.setAttribute("aria-label", plotData["aria-label"]);
-            plotContainer.setAttribute("tabindex", "0");
         }
 
         Plotly.react(plotContainer, cleanedData, layout, config);
