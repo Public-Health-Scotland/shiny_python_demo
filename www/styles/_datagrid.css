@@ -8,5 +8,14 @@ shiny-data-frame {
   width: 100% !important;
   --shiny-datagrid-font-size: 0.9375rem;
   margin: 0 !important;
+}
+
+shiny-data-frame .shiny-data-grid > table > thead > tr > th,
+shiny-data-frame .shiny-data-grid > table > tbody > tr > td {
   text-align: right !important;
+}
+
+shiny-data-frame .shiny-data-grid > table > thead > tr > :not(:last-child),
+shiny-data-frame .shiny-data-grid > table > tbody > tr > :not(:last-child) {
+  border-right-color: transparent !important;
 }
