@@ -2,11 +2,11 @@ import asyncio
 import os
 import duckdb
 import pandas as pd
-from dotenv import load_dotenv  # comment out when deploying
+# from dotenv import load_dotenv # comment when deploying
 
 class DataLoader:
     def __init__(self):
-        load_dotenv() # comment out when deploying
+        # load_dotenv() # comment when deploying
         # This is the file path to the data
         # self.path: str = 'data/WHR2024.csv'
         self.DUCKD_DIR: str = "data/encrypted_data.duckdb"
@@ -42,24 +42,35 @@ class DataLoader:
     # It runs duckdb calls on a thread
     async def get_data_duckdb(self, query: str) -> pd.DataFrame:
         def _run_query():
-            # Start in-memory DuckDB
-            con = duckdb.connect()
-            # Attach encrypted database
-            con.execute(f"""
-                INSTALL httpfs;
-                LOAD httpfs;
-                ATTACH '{self.DUCKD_DIR}' AS enc (
-                    READ_ONLY,
-                    ENCRYPTION_KEY '{str(os.getenv('DUCKDB_KEY'))}',
-                    ENCRYPTION_CIPHER 'GCM'
-                );
-                USE enc;
-            """)
+            con = None
             try:
-                df = con.execute(query).fetchdf()  # synchronous call returning pandas DataFrame
+                # Start in-memory DuckDB
+                con = duckdb.connect()
+
+                # Install and load extension
+                con.execute("""
+                    INSTALL httpfs;
+                    LOAD httpfs;
+                """)
+                print(f"test password {str(os.getenv("DUCKDB_KEY"))}")
+                # Attach encrypted database
+                con.execute(f"""
+                    ATTACH '{self.DUCKD_DIR}' AS enc (
+                        READ_ONLY,
+                        ENCRYPTION_KEY '{str(os.getenv("DUCKDB_KEY"))}',
+                        ENCRYPTION_CIPHER 'GCM'
+                    );
+                    USE enc;
+                """)
+                return con.execute(query).fetchdf()
+
+            except Exception as e:
+                print(f"DuckDB error: {e}")
+                raise
+
             finally:
-                con.close()
-            return df
+                if con is not None:
+                    con.close()
 
         return await asyncio.to_thread(_run_query)
 
