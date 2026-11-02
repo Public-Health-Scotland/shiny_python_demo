@@ -92,11 +92,6 @@
   .navbar {
     background-color: var(--phs-color-bg) !important;
   }
-
-  .navbar-collapse.show {
-    display: block !important;
-    height: 301px;
-  }
   
   .navbar-nav {
     align-items: center;
@@ -118,8 +113,9 @@
     border-bottom: 1px solid var(--phs-color-border);
     box-shadow: 0 12px 4px rgba(0, 0, 0, 0.15);
     text-align: center;
+    height: auto;
     overflow-y: auto !important;
-    height: 301px;
+    max-height: calc(100dvh - var(--navbar-height));
     z-index: 1040 !important;
     -webkit-overflow-scrolling: touch;
   }

@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
             fontColor: "#e8e8e8",
             colorway: [
                 "#0078D4", "#C73918", "#1E7F84", "#9B4393", "#3393DD",
-                "#6B5C85", "#AF69A9", "#3F3685", "#948DA3", "#655E9D"
+                "#948DA3", "#AF69A9", "#6B5C85", "#3F3685", "#655E9D"
             ],
             mapColorscale: [
                 [0, "#2d1745"],

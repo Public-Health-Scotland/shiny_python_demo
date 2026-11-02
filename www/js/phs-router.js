@@ -41,8 +41,10 @@ function activateTabFromHash() {
   const hash = window.location.hash.slice(1);
   if (!hash) return;
 
-  const link = document.querySelector(
-    `[data-value="${hash}"], .dropdown-menu [data-value="${hash}"]`
+  const link = Array.from(
+    document.querySelectorAll(".navbar a[data-value]")
+  ).find(
+    link => link.getAttribute("data-value") === hash
   );
   if (!link) return;
 
