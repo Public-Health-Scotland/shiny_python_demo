@@ -88,6 +88,17 @@
   margin-bottom: 0px;
 }
 
+.theme-select-container {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+}
+
+.theme-select-container .shiny-input-container {
+  width: 150px;
+  margin-bottom: 0;
+}
+
 @media (max-width: 767px) {
   .navbar {
     background-color: var(--phs-color-bg) !important;

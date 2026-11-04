@@ -165,6 +165,12 @@ body > .container-fluid .tab-content {
     position: relative;
 }
 
+.phs-kpi-row .bslib-gap-spacing.html-fill-container {
+  display: flex;
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+}
+
 .phs-kpi-box {
     background-color: var(--phs-color-bg) !important;
     align-items: center;
@@ -185,6 +191,7 @@ body > .container-fluid .tab-content {
 }
 
 /* Remove the blue border glow */
+.shiny-input-select,
 .selectize-input.focus {
     border-color: var(--phs-color-primary) !important;
     box-shadow: 0 0 0 2px var(--phs-color-primary) !important;

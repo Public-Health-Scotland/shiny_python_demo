@@ -99,8 +99,10 @@ app_ui = ui.page_navbar(
             ui.div(
                 ui.span("theme:"),
                 ui.div(
-                    ui.input_dark_mode(id="theme_mode"),
-                    ui.span(id="theme-label")
+                    ui.input_select("theme_mode", "",
+                        choices={"light": "☀ - Light", "dark": "☾ - Dark"}
+                    ),
+                    class_="theme-select-container"
                 )
             )
         ),
