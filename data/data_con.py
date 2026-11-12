@@ -52,7 +52,6 @@ class DataLoader:
                     INSTALL httpfs;
                     LOAD httpfs;
                 """)
-                print(f"test password {str(os.getenv("DUCKDB_KEY"))}")
                 # Attach encrypted database
                 con.execute(f"""
                     ATTACH '{self.DUCKD_DIR}' AS enc (

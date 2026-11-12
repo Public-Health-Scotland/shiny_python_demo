@@ -7,7 +7,7 @@ from view.myplots import PlotBuilder
 from helper.functs import phs_config_get, get_social_urls, get_phs_url, get_ogl_url, get_compliance_list, get_my_www_folder
 
 # important settings
-assets_folder = Path(__file__).parent / 'www'
+assets_folder = get_my_www_folder()
 cfg = phs_config_get(assets_folder / "config" / "default-config.json")
 
 # Define the UI
@@ -59,7 +59,6 @@ app_ui = ui.page_navbar(
     ui.nav_panel(
         # Name and icon
         ui.span(fa.icon_svg("chart-line"), "Bar plot"),
-
         ui.layout_sidebar(
             ui.sidebar(
                 ui.h3("World Happiness top 10"),
@@ -356,4 +355,4 @@ def server(input, output, session):
         plot, descript = myplots.build_linecountry(data, selected_country)
         await send_plotly("linecountry", plot, descript)
 
-app = App(app_ui, server, static_assets={"/www": get_my_www_folder()})
+app = App(app_ui, server, static_assets={"/www": assets_folder})
