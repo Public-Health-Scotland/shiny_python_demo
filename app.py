@@ -58,7 +58,7 @@ app_ui = ui.page_navbar(
     ),
     ui.nav_panel(
         # Name and icon
-        ui.span(fa.icon_svg("chart-line"), "Bar plot"),
+        ui.span(fa.icon_svg("chart-line"), "Happiness top 10"),
         ui.layout_sidebar(
             ui.sidebar(
                 ui.h3("World Happiness top 10"),
@@ -66,7 +66,7 @@ app_ui = ui.page_navbar(
             ),
             ui.div(id="top10_bar", class_="phs-plot-container")
         ),
-        value="bar_plots"
+        value="happiness_top10"
     ),
     ui.nav_panel(
         # Name and icon
