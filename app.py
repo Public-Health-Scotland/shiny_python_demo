@@ -66,7 +66,7 @@ app_ui = ui.page_navbar(
             ),
             ui.div(id="top10_bar", class_="phs-plot-container")
         ),
-        value="happiness_top10"
+        value="happiness"
     ),
     ui.nav_panel(
         # Name and icon
