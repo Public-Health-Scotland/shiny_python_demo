@@ -25,7 +25,6 @@ function closeMobileMenu() {
 
 // Close all open Bootstrap dropdown menus.
 function closeDropdownMenu() {
-  // Ensure each dropdown has a Bootstrap instance before hiding it.
   document.querySelectorAll(".dropdown-toggle").forEach(toggle => {
     let dropdown = bootstrap.Dropdown.getInstance(toggle);
     if (!dropdown) dropdown = new bootstrap.Dropdown(toggle);
@@ -34,7 +33,7 @@ function closeDropdownMenu() {
 }
 
 // Update the URL and close navigation menus after a tab change.
-function handleTabChange(value) {
+function handleTabChange(value, smoothScroll = true) {
   if (!value) return;
 
   const nextHash = `#${encodeURIComponent(value)}`;
@@ -45,40 +44,43 @@ function handleTabChange(value) {
   closeDropdownMenu();
   closeMobileMenu();
 
-  // Scroll to the top after the current frame's layout work.
   requestAnimationFrame(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: smoothScroll ? "smooth" : "instant" });
   });
 }
 
 // Activate the nav link whose value matches the URL fragment.
-function activateTabFromHash() {
+function activateTabFromHash(isInitialLoad = false) {
   const hash = getHashValue();
   if (!hash) return false;
 
-  // Find the link corresponding to the current fragment.
   const link = Array.from(
-    document.querySelectorAll(".navbar a[data-value]")
+    document.querySelectorAll(".nav-link[data-value], .dropdown-item[data-value]")
   ).find(
     link => link.getAttribute("data-value") === hash
   );
   if (!link) return false;
 
   if (!link.classList.contains("active")) {
-    link.click();
+    // Use Bootstrap's Tab API directly if available to avoid unnecessary click overhead,
+    // falling back to .click() so Shiny's tabset input binding registers the change.
+    if (window.bootstrap && bootstrap.Tab) {
+      bootstrap.Tab.getOrCreateInstance(link).show();
+    } else {
+      link.click();
+    }
   }
   closeDropdownMenu();
 
-  // Scroll to the top after the tab has been activated.
+  // Jump immediately on initial load rather than animating a scroll
   requestAnimationFrame(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: isInitialLoad ? "instant" : "smooth" });
   });
 
   return true;
 }
 
 // From Python: sync hash when selected_tab changes
-// Ignore an initial server value that would overwrite a deep link.
 Shiny.addCustomMessageHandler("update_hash", value => {
   if (preserveInitialHash && value !== initialHash) return;
   if (value === initialHash) preserveInitialHash = false;
@@ -86,14 +88,12 @@ Shiny.addCustomMessageHandler("update_hash", value => {
 });
 
 // User clicks a tab
-// Keep the URL in sync while leaving Bootstrap and Shiny click handling intact.
 document.addEventListener("click", function (e) {
   if (!e.isTrusted) return;
 
-  // Let Bootstrap handle opening the dropdown menu
   if (e.target.closest(".dropdown-toggle")) return;
 
-  const link = e.target.closest(".navbar a[data-value]");
+  const link = e.target.closest(".nav-link[data-value], .dropdown-item[data-value]");
   if (!link) return;
 
   preserveInitialHash = false;
@@ -102,20 +102,31 @@ document.addEventListener("click", function (e) {
 });
 
 // Browser back/forward
-// Ignore the router's own hash update; otherwise activate the requested tab.
 window.addEventListener("hashchange", function () {
   if (window.location.hash === pendingHash) {
     pendingHash = null;
     return;
   }
   preserveInitialHash = false;
-  activateTabFromHash();
+  activateTabFromHash(false);
 });
 
-// On initial connect: honor hash if present
-// Activate a deep-linked tab after Shiny has connected.
-$(document).on("shiny:connected", function () {
-  if (!activateTabFromHash()) {
+// Run as soon as the DOM is parsed (before WebSocket connection completes)
+function initRouter() {
+  if (!activateTabFromHash(true)) {
     preserveInitialHash = false;
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initRouter);
+} else {
+  initRouter();
+}
+
+// Re-verify once Shiny connects in case dynamic tabs were rendered late
+$(document).on("shiny:connected", function () {
+  if (preserveInitialHash) {
+    initRouter();
   }
 });

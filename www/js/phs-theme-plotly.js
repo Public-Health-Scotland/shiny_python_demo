@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Render or update a single plot element
-    function renderPlot(targetId) {
+    async function renderPlot(targetId) {
         const plotContainer = document.getElementById(targetId);
         const plotData = plotsStore[targetId];
 
@@ -94,14 +94,43 @@ document.addEventListener("DOMContentLoaded", function() {
         const layout = JSON.parse(JSON.stringify(plotData.layout || {}));
         layout.autosize = true;
 
+        // Apply theme-dependent colors to named Plotly shapes
+        if (Array.isArray(layout.shapes)) {
+            const bandColor = getCssVariable("--plotly-band-color");
+            const bandLineColor = getCssVariable("--plotly-band-line-color");
+
+            layout.shapes.forEach(shape => {
+                if (shape.name === "today_highlight") {
+                    shape.fillcolor = bandColor;
+                }
+
+                if (shape.name === "today_line") {
+                    shape.line = shape.line || {};
+                    shape.line.color = bandLineColor;
+                }
+            });
+        }
+
         // FIX: Set chart margins (top, bottom, left, right)
         layout.margin = {
             t: 40,
-            b: 65,
-            l: 65,
-            r: 65,
+            b: 0,
+            l: 0,
+            r: 0,
             ...(layout.margin || {}) // Merges with any layout.margin sent from Python if present
         };
+
+        // X-axis defaults
+        layout.xaxis = layout.xaxis || {};
+        layout.xaxis.automargin ??= true;
+        layout.xaxis.title = layout.xaxis.title || {};
+        layout.xaxis.title.standoff ??= 20;
+
+        // Y-axis defaults
+        layout.yaxis = layout.yaxis || {};
+        layout.yaxis.automargin ??= true;
+        layout.yaxis.title = layout.yaxis.title || {};
+        layout.yaxis.title.standoff ??= 20;
 
         // Apply theme settings
         layout.template = theme.template;
@@ -148,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function() {
             plotContainer.setAttribute("aria-label", plotData["aria-label"]);
         }
 
-        Plotly.react(plotContainer, cleanedData, layout, config);
+        await Plotly.react(plotContainer, cleanedData, layout, config);
         ensureResponsiveObserver(targetId, plotContainer);
     }
 
@@ -180,3 +209,10 @@ document.addEventListener("DOMContentLoaded", function() {
         attributeFilter: ["data-bs-theme"]
     });
 });
+
+// Read CSS elements
+function getCssVariable(name) {
+    return getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim();
+}

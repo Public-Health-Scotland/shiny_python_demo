@@ -19,6 +19,8 @@ html[data-bs-theme="dark"] {
     --phs-color-link-hover: var(--phs-color-primary-hover);
     --phs-color-text-muted: #b5aec2;
     --phs-color-surface-hover: #a2179f26;
+    --plotly-band-color: rgba(255, 215, 0, 0.25);
+    --plotly-band-line-color: rgba(255, 215, 0, 0.90);
 }
 
 html[data-bs-theme='light'] {
@@ -42,6 +44,8 @@ html[data-bs-theme='light'] {
     --phs-color-link-hover: var(--phs-color-primary-hover);
     --phs-color-text-muted: #666666;
     --phs-color-surface-hover: #ecebf3;
+    --plotly-band-color: rgba(60, 60, 60, 0.15);
+    --plotly-band-line-color: rgba(60, 60, 60, 0.97);
 }
 
 :root {
