@@ -11,201 +11,213 @@ assets_folder = get_my_www_folder()
 cfg = phs_config_get(assets_folder / "config" / "default-config.json")
 
 # Define the UI
-app_ui = ui.page_navbar(
-    ui.nav_panel(
-        # Name and icon
-        ui.span(fa.icon_svg("house"), "Home"),
-        ui.layout_column_wrap(
-            ui.output_ui("kpi_records"),
-            ui.output_ui("kpi_scale"),
-            ui.output_ui("kpi_other"),
-            class_="phs-kpi-row"
-        ),
-        
-        # First row: 2 cards side by side
-        ui.layout_columns(
-            ui.card(ui.card_header("Top 3 happiness data distribution",
-                    ui.popover(
-                        ui.span(
-                            fa.icon_svg("ellipsis"),
-                            style="position:absolute; top: 5px; right: 7px;",),
-                        "Year",
-                        ui.input_selectize("ddpieyear", "Choose", choices=[] ))
-                    ),
-                    ui.div(id="pietop3", class_="phs-plot-container"),
-                    full_screen=True
-            ),
-            ui.card(ui.card_header("Scatter plot"), 
-                    ui.div(id="scatterplot", class_="phs-plot-container"), 
-                    full_screen=True),
-            col_widths=[6, 6]
-        ),
-
-        # Second row: 1 card centered
-        ui.layout_columns(
-            ui.card(ui.card_header("time happiness",
-                    ui.popover(
-                        ui.span(
-                            fa.icon_svg("ellipsis"),
-                            style="position:absolute; top: 5px; right: 7px;",),
-                        "Select a country",
-                        ui.input_selectize("ddCountry", "country", choices=[] ))),
-                    ui.div(id="linecountry", class_="phs-plot-container"),
-                    full_screen=True),
-            col_widths=[12]
-        ),
-        value="home"
-    ),
-    ui.nav_panel(
-        # Name and icon
-        ui.span(fa.icon_svg("chart-line"), "Happiness top 10"),
-        ui.layout_sidebar(
-            ui.sidebar(
-                ui.h3("World Happiness top 10"),
-                ui.input_selectize("byear", "Choose", choices=[])
-            ),
-            ui.div(id="top10_bar", class_="phs-plot-container")
-        ),
-        value="happiness"
-    ),
-    ui.nav_panel(
-        # Name and icon
-        ui.span(fa.icon_svg("map"), "Geodata"),
-
-        ui.layout_sidebar(
-            ui.sidebar(
-                ui.h3("Map plot"),
-                ui.input_selectize("mapyear", "Choose", choices=[])
-            ),
-            ui.div(id="happiness_map", class_="phs-plot-container")
-        ),
-        value="geodata"
-    ),
-    ui.nav_spacer(),
-    ui.nav_menu(
-        # Name and icon
-        ui.span(fa.icon_svg("ellipsis"), "More"),
-        ui.nav_control(
-            ui.div(
-                ui.span("User:"),
-                ui.div(
-                    fa.icon_svg("person-circle-check"),
-                    ui.output_text("welcome", inline=True), class_="user-email"
-                )
-            )
-        ),
-        ui.nav_control(
-            ui.div(
-                ui.span("theme:"),
-                ui.div(
-                    ui.input_select("theme_mode", "",
-                        choices={"light": "☀ - Light", "dark": "☾ - Dark"}
-                    ),
-                    class_="theme-select-container"
-                )
-            )
-        ),
+app_ui = ui.div(
+    ui.page_navbar(
         ui.nav_panel(
             # Name and icon
-            ui.span(fa.icon_svg("database"), "Database"),
+            ui.span(fa.icon_svg("house"), "Home"),
+            ui.layout_column_wrap(
+                ui.output_ui("kpi_records"),
+                ui.output_ui("kpi_scale"),
+                ui.output_ui("kpi_other"),
+                class_="phs-kpi-row"
+            ),
+            
+            # First row: 2 cards side by side
             ui.layout_columns(
-                ui.card(ui.card_header("happiness data"),
-                        ui.output_data_frame("df_table"),
+                ui.card(ui.card_header("Top 3 happiness data distribution",
+                        ui.popover(
+                            ui.span(
+                                fa.icon_svg("ellipsis"),
+                                style="position:absolute; top: 5px; right: 7px;",),
+                            "Year",
+                            ui.input_selectize("ddpieyear", "Choose", choices=[] ))
+                        ),
+                        ui.div(id="pietop3", class_="phs-plot-container"),
                         full_screen=True
                 ),
+                ui.card(ui.card_header("Scatter plot"), 
+                        ui.div(id="scatterplot", class_="phs-plot-container"), 
+                        full_screen=True),
+                col_widths=[6, 6]
+            ),
+
+            # Second row: 1 card centered
+            ui.layout_columns(
+                ui.card(ui.card_header("time happiness",
+                        ui.popover(
+                            ui.span(
+                                fa.icon_svg("ellipsis"),
+                                style="position:absolute; top: 5px; right: 7px;",),
+                            "Select a country",
+                            ui.input_selectize("ddCountry", "country", choices=[] ))),
+                        ui.div(id="linecountry", class_="phs-plot-container"),
+                        full_screen=True),
                 col_widths=[12]
             ),
-            value="database"
+            value="home"
         ),
         ui.nav_panel(
             # Name and icon
-            ui.span(fa.icon_svg("codepen"), "Contact"),
-            ui.h2("Contact us"),
-            value="contact"
+            ui.span(fa.icon_svg("chart-line"), "Happiness top 10"),
+            ui.layout_sidebar(
+                ui.sidebar(
+                    ui.h3("World Happiness top 10"),
+                    ui.input_selectize("byear", "Choose", choices=[])
+                ),
+                ui.div(id="top10_bar", class_="phs-plot-container")
+            ),
+            value="happiness"
         ),
         ui.nav_panel(
             # Name and icon
-            ui.span(fa.icon_svg("people-carry-box"), "Help"),
-            ui.h2("Help Page"),
-            value="help"
-        )
-    ),
-    # Inject Plotly JS globally
-    ui.head_content(
-        ui.tags.link(rel="icon", href="www/img/phs-logo.svg", type="image/x-icon"),
-        # ui.tags.script(src="https://cdn.plot.ly/plotly-4.1.1.min.js"), # online version
-        ui.tags.script(src="www/js/plotly-4.1.1.min.js"),
-        ui.tags.script(src="www/js/phs-theme-plotly.js"),
-        ui.tags.script(src="www/js/phs-footer.js"),
-        ui.tags.script(src="www/js/phs-router.js"),
-        ui.tags.script(src="www/js/phs-theme-mode.js"),
-        ui.tags.link(rel="stylesheet", href="www/styles/_phs.css"),
-        ui.tags.link(rel="stylesheet", href="www/styles/_navbar.css"),
-        ui.tags.link(rel="stylesheet", href="www/styles/_footer.css"),
-        ui.tags.link(rel="stylesheet", href="www/styles/_value_box.css"),
-        ui.tags.link(rel="stylesheet", href="www/styles/_datagrid.css"),
-        ui.tags.link(rel="stylesheet", href="www/styles/_spinner.css")
-    ),
-    title=ui.tags.a(
-        ui.tags.img(class_ = "phs-navbar-logo", alt="PHS logo"), "",
-        href = get_phs_url(cfg),
-        target = "_blank",
-        class_="navbar-brand"
-    ),
-    lang="en",
-    navbar_options=ui.navbar_options(position="fixed-top"),
-    footer=ui.tags.footer(
-        ui.div(
-            ui.div(
-                ui.div("Shiny Python demo", class_ = "phs-footer-row1-left"),
-                ui.div(
-                    *[
-                        ui.tags.a(section.get('name_en'), href="#")
-                        for name, section in get_compliance_list(cfg).items() if section.get('enabled') is True and section.get('name_en') is not None
-                    ], class_="phs-footer-row1-right"),
-                class_="phs-footer-row phs-footer-row1",
-            ),
-            ui.div(
-                ui.span(
-                    ui.tags.a(
-                        "publichealthscotland.scot",
-                        href = get_phs_url(cfg),
-                        target = "_blank",
-                        rel = "noopener noreferrer",
-                        class_="phs-footer-phs-link"
-                    ), class_="left"),
-                ui.span(
-                    *[
-                        ui.tags.a(fa.icon_svg(name), href=url, target="_blank", class_ = "phs-footer-social-icon")
-                        for name, url in get_social_urls(cfg).items()
-                    ], class_="phs-footer-row2-right"),
-                class_="phs-footer-row phs-footer-row2",
-            ),
-            ui.div(
-                ui.div(
-                    ui.tags.img(class_="ogl-logo", alt="Open Government Licence logo"),
-                    ui.span("All content is available under the ", 
-                            ui.tags.a("Open Government Licence",
-                                        href = get_ogl_url(cfg),
-                                        target = "_blank",
-                                        rel = "noopener noreferrer",
-                                        class_ = "phs-footer-ogl-link"),
-                            ", except where otherwise stated",
-                            class_="phs-footer-ogl-text"),
-                    class_ = "phs-footer-row3-left"
+            ui.span(fa.icon_svg("map"), "Geodata"),
+
+            ui.layout_sidebar(
+                ui.sidebar(
+                    ui.h3("Map plot"),
+                    ui.input_selectize("mapyear", "Choose", choices=[])
                 ),
-                ui.div(
-                    ui.span(id="app-footer", class_="phs-footer-copyright"),
-                    class_ = "phs-footer-row3-right",
-                ),
-                class_="phs-footer-row phs-footer-row3",
-            ), class_ = "phs-footer-inner"
+                ui.div(id="happiness_map", class_="phs-plot-container")
+            ),
+            value="geodata"
         ),
-        class_="phs-footer",
-        role="contentinfo"
+        ui.nav_spacer(),
+        ui.nav_menu(
+            # Name and icon
+            ui.span(fa.icon_svg("ellipsis"), "More"),
+            ui.nav_control(
+                ui.div(
+                    ui.span("User:"),
+                    ui.div(
+                        fa.icon_svg("person-circle-check"),
+                        ui.output_text("welcome", inline=True), class_="user-email"
+                    )
+                )
+            ),
+            ui.nav_control(
+                ui.div(
+                    ui.span("theme:"),
+                    ui.div(
+                        ui.input_select("theme_mode", "",
+                            choices={"light": "☀ - Light", "dark": "☾ - Dark"}
+                        ),
+                        class_="theme-select-container"
+                    )
+                )
+            ),
+            ui.nav_panel(
+                # Name and icon
+                ui.span(fa.icon_svg("database"), "Database"),
+                ui.layout_columns(
+                    ui.card(ui.card_header("happiness data"),
+                            ui.output_data_frame("df_table"),
+                            full_screen=True
+                    ),
+                    col_widths=[12]
+                ),
+                value="database"
+            ),
+            ui.nav_panel(
+                # Name and icon
+                ui.span(fa.icon_svg("codepen"), "Contact"),
+                ui.h2("Contact us"),
+                value="contact"
+            ),
+            ui.nav_panel(
+                # Name and icon
+                ui.span(fa.icon_svg("people-carry-box"), "Help"),
+                ui.h2("Help Page"),
+                value="help"
+            )
+        ),
+        # Inject Plotly JS globally
+        ui.head_content(
+            ui.tags.link(rel="icon", href="www/img/phs-logo.svg", type="image/x-icon"),
+            # ui.tags.script(src="https://cdn.plot.ly/plotly-4.1.1.min.js"), # online version
+            ui.tags.script(src="www/js/plotly-4.1.1.min.js"),
+            ui.tags.script(src="www/js/phs-theme-plotly.js"),
+            ui.tags.script(src="www/js/phs-footer.js"),
+            ui.tags.script(src="www/js/phs-router.js"),
+            ui.tags.script(src="www/js/phs-theme-mode.js"),
+            ui.tags.script(src="www/js/phs-chat.js"),
+            ui.tags.link(rel="stylesheet", href="www/styles/_phs.css"),
+            ui.tags.link(rel="stylesheet", href="www/styles/_navbar.css"),
+            ui.tags.link(rel="stylesheet", href="www/styles/_footer.css"),
+            ui.tags.link(rel="stylesheet", href="www/styles/_value_box.css"),
+            ui.tags.link(rel="stylesheet", href="www/styles/_datagrid.css"),
+            ui.tags.link(rel="stylesheet", href="www/styles/_chat.css")
+        ),
+        title=ui.tags.a(
+            ui.tags.img(class_ = "phs-navbar-logo", alt="PHS logo"), "",
+            href = get_phs_url(cfg),
+            target = "_blank",
+            class_="navbar-brand"
+        ),
+        lang="en",
+        navbar_options=ui.navbar_options(position="fixed-top"),
+        footer=ui.tags.footer(
+            ui.div(
+                ui.div(
+                    ui.div("Shiny Python demo", class_ = "phs-footer-row1-left"),
+                    ui.div(
+                        *[
+                            ui.tags.a(section.get('name_en'), href="#")
+                            for name, section in get_compliance_list(cfg).items() if section.get('enabled') is True and section.get('name_en') is not None
+                        ], class_="phs-footer-row1-right"),
+                    class_="phs-footer-row phs-footer-row1",
+                ),
+                ui.div(
+                    ui.span(
+                        ui.tags.a(
+                            "publichealthscotland.scot",
+                            href = get_phs_url(cfg),
+                            target = "_blank",
+                            rel = "noopener noreferrer",
+                            class_="phs-footer-phs-link"
+                        ), class_="left"),
+                    ui.span(
+                        *[
+                            ui.tags.a(fa.icon_svg(name), href=url, target="_blank", class_ = "phs-footer-social-icon")
+                            for name, url in get_social_urls(cfg).items()
+                        ], class_="phs-footer-row2-right"),
+                    class_="phs-footer-row phs-footer-row2",
+                ),
+                ui.div(
+                    ui.div(
+                        ui.tags.img(class_="ogl-logo", alt="Open Government Licence logo"),
+                        ui.span("All content is available under the ", 
+                                ui.tags.a("Open Government Licence",
+                                            href = get_ogl_url(cfg),
+                                            target = "_blank",
+                                            rel = "noopener noreferrer",
+                                            class_ = "phs-footer-ogl-link"),
+                                ", except where otherwise stated",
+                                class_="phs-footer-ogl-text"),
+                        class_ = "phs-footer-row3-left"
+                    ),
+                    ui.div(
+                        ui.span(id="app-footer", class_="phs-footer-copyright"),
+                        class_ = "phs-footer-row3-right",
+                    ),
+                    class_="phs-footer-row phs-footer-row3",
+                ), class_ = "phs-footer-inner"
+            ),
+            class_="phs-footer",
+            role="contentinfo"
+        ),
+        id="selected_tab",
+        window_title="World Happiness"
     ),
-    id="selected_tab",
-    window_title="World Happiness"
+    ui.tags.details(
+        ui.tags.summary("Chat with the data", id="chat_launcher", class_="chat-launcher"),
+        ui.card(
+            ui.card_header("Data assistant"),
+            ui.chat_ui("csv_chat"),
+            class_="chat-panel",
+        ),
+        class_="chat-widget",
+    )
 )
 
 def server(input, output, session):
@@ -213,7 +225,8 @@ def server(input, output, session):
     my_data = DataLoader()
     myplots = PlotBuilder()
 
-    kpi_cache = reactive.Value(None)  # cache KPI stats after load
+    kpi_cache = reactive.Value(None) # cache KPI stats after load
+    data_ready = reactive.Value(False)
     # session.on_ended(my_data.close)
 
     @reactive.effect
@@ -235,6 +248,7 @@ def server(input, output, session):
     # Load data ONCE at session start
     @reactive.effect
     async def _load_data():
+        data_ready.set(False)
         await my_data.load_data()
         
         # Cache KPI values once
@@ -252,6 +266,18 @@ def server(input, output, session):
         ui.update_selectize("mapyear", choices=my_data.dict_years)
         ui.update_selectize("ddpieyear", choices=my_data.dict_years)
         ui.update_selectize("ddCountry", choices=my_data.country_list)
+
+        # Data is now ready for the chatbot
+        data_ready.set(True)
+
+    @reactive.effect
+    async def _():
+        chat_dict = {
+                "id": "chat_launcher",
+                "enabled": data_ready.get(),
+            }
+        print(chat_dict)
+        await session.send_custom_message("setChatState", chat_dict)
 
     def kpi_value_box(title: str, icon_name: str, message: str, current: float, historical: float):
         # get colour for your icon and current value
