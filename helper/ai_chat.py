@@ -9,30 +9,38 @@ class AIChat:
         self.model_id = "Qwen/Qwen2.5-0.5B-Instruct"
         self.cache_dir = Path(__file__).resolve().parents[1] / ".model"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self.ai_ready = False
 
         os.environ["HF_HOME"] = str(self.cache_dir)
         os.environ["TRANSFORMERS_CACHE"] = str(self.cache_dir)
         os.environ["HF_HUB_CACHE"] = str(self.cache_dir)
 
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            self.model_id,
-            cache_dir=str(self.cache_dir),
-            # local_files_only=True,
-        )
-        model = AutoModelForCausalLM.from_pretrained(
-            self.model_id,
-            cache_dir=str(self.cache_dir),
-            torch_dtype=torch.float32,
-            low_cpu_mem_usage=True,
-            device_map="auto",
-        )
-        self.pipe = pipeline(
-            "text-generation",
-            model=model,
-            tokenizer=self.tokenizer,
-        )
+        try:
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                self.model_id,
+                cache_dir=str(self.cache_dir),
+                # local_files_only=True,
+            )
+            model = AutoModelForCausalLM.from_pretrained(
+                self.model_id,
+                cache_dir=str(self.cache_dir),
+                torch_dtype=torch.float32,
+                low_cpu_mem_usage=True,
+                device_map="auto",
+            )
+            self.pipe = pipeline(
+                "text-generation",
+                model=model,
+                tokenizer=self.tokenizer,
+            )
+            self.ai_ready = True
+        except Exception as e:
+            print(f"Unable to connect to Hugging Face: {e}")
 
     def answer(self, query: str, context: str) -> str:
+        if self.ai_ready == False:
+            return "Your model is not ready"
+
         if not query or not query.strip():
             return "Please type a question."
 

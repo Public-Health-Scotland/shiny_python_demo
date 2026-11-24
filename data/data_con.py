@@ -8,8 +8,8 @@ class DataLoader:
     def __init__(self):
         # load_dotenv() # comment when deploying
         # This is the file path to the data
-        # self.path: str = 'data/WHR2024.csv'
-        self.DUCKD_DIR: str = "data/encrypted_data.duckdb"
+        self.path: str = 'data/WHR2024.csv'
+        # self.DUCKD_DIR: str = "data/encrypted_data.duckdb"
         # Ensure we load at least the columns we need for the app
         self.COLUMNS = [
             "Year",
@@ -27,13 +27,13 @@ class DataLoader:
 
     async def load_data(self) -> pd.DataFrame:
         # CSV file
-        # self.happiness_data = await asyncio.to_thread(
-        #     pd.read_csv,
-        #     self.path,
-        #     usecols=self.COLUMNS,
-        # )
+        self.happiness_data = await asyncio.to_thread(
+            pd.read_csv,
+            self.path,
+            usecols=self.COLUMNS,
+        )
         # DuckDB file
-        self.happiness_data = await self.get_data_duckdb('SELECT Year, "Country name", "Ladder score", "Explained by: Log GDP per capita" FROM whr2024')
+        # self.happiness_data = await self.get_data_duckdb('SELECT Year, "Country name", "Ladder score", "Explained by: Log GDP per capita" FROM whr2024')
 
         self.country_list = self.happiness_data["Country name"].unique().tolist()
         self.dict_years = {str(year): str(year) for year in sorted(self.happiness_data['Year'].unique())}
