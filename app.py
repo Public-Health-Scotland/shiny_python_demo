@@ -5,6 +5,7 @@ from pathlib import Path
 from data.data_con import DataLoader
 from view.myplots import PlotBuilder
 from helper.functs import phs_config_get, get_social_urls, get_phs_url, get_ogl_url, get_compliance_list, get_my_www_folder, build_data_context
+from helper.ai_chat import AIChat
 
 # important settings
 assets_folder = get_my_www_folder()
@@ -225,6 +226,7 @@ def server(input, output, session):
     my_data = DataLoader()
     myplots = PlotBuilder()
     chat = ui.Chat(id="ask_chat")
+    ai_chat = AIChat()
 
     data_cache = reactive.Value(None) # cache KPI stats after load
     data_ready = reactive.Value(False)
@@ -284,8 +286,9 @@ def server(input, output, session):
     @chat.on_user_submit
     async def _(user_input: str):
         if data_ready.get() == True:
-            reply = data_cache()
-            await chat.append_message(reply["context"])
+            info = data_cache()
+            reply = ai_chat.answer(user_input, info["context"])
+            await chat.append_message(reply)
 
     def kpi_value_box(title: str, icon_name: str, message: str, current: float, historical: float):
         # get colour for your icon and current value
