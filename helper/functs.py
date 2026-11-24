@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import json
+import pandas as pd
 
 def get_my_www_folder() -> Path:
     """This function returns the path to the 'www' folder, 
@@ -67,3 +68,21 @@ def get_compliance_list(cfg: dict) -> dict:
     if cfg.get("compliance") is None:
         return {}
     return cfg.get("compliance", {})
+
+def build_data_context(data: pd.DataFrame) -> str:
+    cols_info = "\n".join(
+        f"- {col!r} ({data[col].dtype}): "
+        f"non-null={data[col].notna().sum()}/{len(data)}"
+        for col in data.columns
+    )
+    numeric_columns = data.select_dtypes(include="number")
+    numeric_summary = (
+        numeric_columns.describe().to_string()
+        if len(numeric_columns.columns) > 0
+        else "No numeric columns."
+    )
+    return (
+        f"Dataset has {len(data)} rows and {len(data.columns)} columns.\n"
+        f"Columns and types:\n{cols_info}\n\n"
+        f"Numeric summary:\n{numeric_summary}"
+    )

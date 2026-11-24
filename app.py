@@ -4,7 +4,7 @@ import getpass
 from pathlib import Path
 from data.data_con import DataLoader
 from view.myplots import PlotBuilder
-from helper.functs import phs_config_get, get_social_urls, get_phs_url, get_ogl_url, get_compliance_list, get_my_www_folder
+from helper.functs import phs_config_get, get_social_urls, get_phs_url, get_ogl_url, get_compliance_list, get_my_www_folder, build_data_context
 
 # important settings
 assets_folder = get_my_www_folder()
@@ -213,7 +213,7 @@ app_ui = ui.div(
         ui.tags.summary("Chat with the data", id="chat_launcher", class_="chat-launcher"),
         ui.card(
             ui.card_header("Data assistant"),
-            ui.chat_ui("csv_chat"),
+            ui.chat_ui("ask_chat"),
             class_="chat-panel",
         ),
         class_="chat-widget",
@@ -224,8 +224,9 @@ def server(input, output, session):
     username = session.user or getpass.getuser()
     my_data = DataLoader()
     myplots = PlotBuilder()
+    chat = ui.Chat(id="ask_chat")
 
-    kpi_cache = reactive.Value(None) # cache KPI stats after load
+    data_cache = reactive.Value(None) # cache KPI stats after load
     data_ready = reactive.Value(False)
     # session.on_ended(my_data.close)
 
@@ -252,13 +253,14 @@ def server(input, output, session):
         await my_data.load_data()
         
         # Cache KPI values once
-        kpi_cache.set({
+        data_cache.set({
             "n_rows":   my_data.happiness_data.shape[0],
             "n_cols":   my_data.happiness_data.shape[1],
             "year_max": my_data.happiness_data["Year"].max(),
             "year_min": my_data.happiness_data["Year"].min(),
             "score_max": round(my_data.happiness_data["Ladder score"].max(), 2),
             "score_min": round(my_data.happiness_data["Ladder score"].min(), 2),
+            "context": build_data_context(my_data.happiness_data)
         })
 
         # Now the country list is ready!
@@ -278,6 +280,12 @@ def server(input, output, session):
             }
         print(chat_dict)
         await session.send_custom_message("setChatState", chat_dict)
+
+    @chat.on_user_submit
+    async def _(user_input: str):
+        if data_ready.get() == True:
+            reply = data_cache()
+            await chat.append_message(reply["context"])
 
     def kpi_value_box(title: str, icon_name: str, message: str, current: float, historical: float):
         # get colour for your icon and current value
@@ -301,7 +309,7 @@ def server(input, output, session):
     @output
     @render.ui
     def kpi_records():
-        kpi = kpi_cache()
+        kpi = data_cache()
         if kpi is None:
             return
         return kpi_value_box("KPI number of records", "database", "(Columns - Rows)", kpi["n_rows"], kpi["n_cols"])
@@ -309,7 +317,7 @@ def server(input, output, session):
     @output
     @render.ui
     def kpi_scale():
-        kpi = kpi_cache()
+        kpi = data_cache()
         if kpi is None:
             return
         return kpi_value_box("KPI happiness scale", "calendar", "Year (Min - Max)", kpi["year_max"], kpi["year_min"])
@@ -317,7 +325,7 @@ def server(input, output, session):
     @output
     @render.ui
     def kpi_other():
-        kpi = kpi_cache()
+        kpi = data_cache()
         if kpi is None:
             return
         return kpi_value_box("KPI Title", "face-smile",
