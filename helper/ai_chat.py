@@ -1,8 +1,6 @@
 import os
 from pathlib import Path
-from typing import Optional
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+from threading import Lock
 
 class AIChat:
     def __init__(self):
@@ -11,31 +9,49 @@ class AIChat:
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.ai_ready = False
 
+        self._load_lock = Lock()
+        self._inference_lock = Lock()
+
         os.environ["HF_HOME"] = str(self.cache_dir)
         os.environ["TRANSFORMERS_CACHE"] = str(self.cache_dir)
         os.environ["HF_HUB_CACHE"] = str(self.cache_dir)
 
-        try:
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                self.model_id,
-                cache_dir=str(self.cache_dir),
-                # local_files_only=True,
-            )
-            model = AutoModelForCausalLM.from_pretrained(
-                self.model_id,
-                cache_dir=str(self.cache_dir),
-                torch_dtype=torch.float32,
-                low_cpu_mem_usage=True,
-                device_map="auto",
-            )
-            self.pipe = pipeline(
-                "text-generation",
-                model=model,
-                tokenizer=self.tokenizer,
-            )
-            self.ai_ready = True
-        except Exception as e:
-            print(f"Unable to connect to Hugging Face: {e}")
+        self.tokenizer = None
+        self.pipe = None
+
+    def load_model(self):
+        with self._load_lock:
+            if self.pipe is not None:
+                return
+
+            try:
+                import torch
+                from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+
+                tokenizer = AutoTokenizer.from_pretrained(
+                    self.model_id,
+                    cache_dir=str(self.cache_dir),
+                    # local_files_only=True,
+                )
+
+                model = AutoModelForCausalLM.from_pretrained(
+                    self.model_id,
+                    cache_dir=str(self.cache_dir),
+                    torch_dtype=torch.float32,
+                    low_cpu_mem_usage=True,
+                    device_map="cpu",
+                )
+
+                self.tokenizer = tokenizer
+                self.pipe = pipeline(
+                    "text-generation",
+                    model=model,
+                    tokenizer=tokenizer,
+                )
+                self.ai_ready = True
+            except Exception as e:
+                print(f"Unable to load model '{self.model_id}': {e}")
+                raise
 
     def answer(self, query: str, context: str) -> str:
         if self.ai_ready == False:
@@ -60,6 +76,7 @@ class AIChat:
             tokenize=False,
             add_generation_prompt=True,
         )
-        outputs = self.pipe(prompt, max_new_tokens=256, do_sample=False)
+        with self._inference_lock:
+            outputs = self.pipe(prompt, max_new_tokens=256, do_sample=False)
         generated_text = outputs[0]["generated_text"]
         return generated_text[len(prompt):].strip()

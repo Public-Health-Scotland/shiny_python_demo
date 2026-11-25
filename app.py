@@ -1,3 +1,4 @@
+import asyncio
 from shiny import App, render, reactive, ui
 import faicons as fa
 import getpass
@@ -6,6 +7,9 @@ from data.data_con import DataLoader
 from view.myplots import PlotBuilder
 from helper.functs import phs_config_get, get_social_urls, get_phs_url, get_ogl_url, get_compliance_list, get_my_www_folder, build_data_context
 from helper.ai_chat import AIChat
+
+# Shared by sessions in this server process; the model itself loads on first use.
+ai_chat = AIChat()
 
 # important settings
 assets_folder = get_my_www_folder()
@@ -141,7 +145,6 @@ app_ui = ui.div(
             ui.tags.script(src="www/js/phs-footer.js"),
             ui.tags.script(src="www/js/phs-router.js"),
             ui.tags.script(src="www/js/phs-theme-mode.js"),
-            ui.tags.script(src="www/js/phs-chat.js"),
             ui.tags.link(rel="stylesheet", href="www/styles/_phs.css"),
             ui.tags.link(rel="stylesheet", href="www/styles/_navbar.css"),
             ui.tags.link(rel="stylesheet", href="www/styles/_footer.css"),
@@ -226,7 +229,6 @@ def server(input, output, session):
     my_data = DataLoader()
     myplots = PlotBuilder()
     chat = ui.Chat(id="ask_chat")
-    ai_chat = AIChat()
 
     data_cache = reactive.Value(None) # cache KPI stats after load
     data_ready = reactive.Value(False)
@@ -274,20 +276,14 @@ def server(input, output, session):
         # Data is now ready for the chatbot
         data_ready.set(True)
 
-    @reactive.effect
-    async def _():
-        chat_dict = {
-                "id": "chat_launcher",
-                "enabled": data_ready.get(),
-            }
-        print(chat_dict)
-        await session.send_custom_message("setChatState", chat_dict)
-
     @chat.on_user_submit
     async def _(user_input: str):
         if data_ready.get() == True:
             info = data_cache()
-            reply = ai_chat.answer(user_input, info["context"])
+            await asyncio.to_thread(ai_chat.load_model)
+            reply = await asyncio.to_thread(
+                ai_chat.answer, user_input, info["context"]
+            )
             await chat.append_message(reply)
 
     def kpi_value_box(title: str, icon_name: str, message: str, current: float, historical: float):
