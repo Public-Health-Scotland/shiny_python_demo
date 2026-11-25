@@ -54,7 +54,7 @@ class AIChat:
                 raise
 
     def answer(self, query: str, context: str) -> str:
-        if self.ai_ready == False:
+        if not self.ai_ready:
             return "Your model is not ready"
 
         if not query or not query.strip():

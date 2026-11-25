@@ -214,7 +214,7 @@ app_ui = ui.div(
         window_title="World Happiness"
     ),
     ui.tags.details(
-        ui.tags.summary("Chat with the data", id="chat_launcher", class_="chat-launcher"),
+        ui.tags.summary("AI Chat", id="chat_launcher", class_="chat-launcher"),
         ui.card(
             ui.card_header("Data assistant"),
             ui.chat_ui("ask_chat"),
